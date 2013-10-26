@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.hoodox.operon</groupId>
+		<artifactId>operon</artifactId>
+		<version>1.0.1</version>
+		<relativePath>../parent-pom</relativePath>			
+	</parent>		
+	<artifactId>opnmlJAXB</artifactId>
+	<packaging>jar</packaging>
+	<name>Operon Workflow Framework</name>
+	<url>http://www.hoodox.com/operon</url>
+	<properties></properties>	
+	<dependencies></dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<outputDirectory>${basedir}/target/jaxb</outputDirectory>
+					<packageName>com.hoodox.operon.opnml.jaxb</packageName>
+					<project>${project}</project>
+					<readOnly>false</readOnly>
+					<schemaDirectory>${basedir}/xsd</schemaDirectory>
+					<schemaFiles>Operonml_v-0-1.xsd</schemaFiles>
+					<bindingDirectory>
+						${basedir}/xsd</bindingDirectory>
+					<bindingFiles>binding.xjb</bindingFiles>
+					<staleFile>${basedir}/target/.jaxb-stalefile</staleFile>
+					<verbose>true</verbose>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

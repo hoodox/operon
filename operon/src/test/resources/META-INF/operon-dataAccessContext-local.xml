@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+  - Application context definition for Repositree's data access layer.
+	- Accessed by business layer objects defined in "applicationContext.xml"
+	- (see web.xml's "contextConfigLocation").
+	-
+	- This version of the data access layer works on a combined database,
+	- using a local DataSource with DataSourceTransactionManager. It does not
+	- need any JTA support in the container: It will run as-is in plain Tomcat.
+	-->
+<beans>
+
+	<!-- Configurer that replaces ${...} placeholders with values from properties files -->
+	<!-- (in this case, mail and JDBC related properties) -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>/META-INF/mail.properties</value>
+				<value>/META-INF/jdbc.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- ========================= RESOURCE DEFINITIONS ========================= -->
+
+	<!-- Local Apache Commons DBCP DataSource that refers to a combined database -->
+	<!-- (see dataAccessContext-jta.xml for an alternative) -->
+	<!-- The placeholders are resolved from jdbc.properties through -->
+	<!-- the PropertyPlaceholderConfigurer in applicationContext.xml -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName"><value>${jdbc.driverClassName}</value></property>
+		<property name="url"><value>${jdbc.url}</value></property>
+		<property name="username"><value>${jdbc.username}</value></property>
+		<property name="password"><value>${jdbc.password}</value></property>
+	</bean>
+
+	<!-- Transaction manager for a single JDBC DataSource -->
+	<!-- (see dataAccessContext-jta.xml for an alternative) -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource"><ref local="dataSource"/></property>
+	</bean>
+
+	<!-- Operon SqlMap setup for iBATIS Database Layer -->
+	<bean id="operonIbatisSqlMapConfig" class="org.springframework.core.io.ClassPathResource">
+		<constructor-arg>
+        	<value>com/hoodox/operon/persistence/ibatis/sqlmap/sql-map-config.xml</value>
+    	</constructor-arg>
+	</bean>
+	
+	<bean id="operonSqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation"><ref bean="operonIbatisSqlMapConfig"/></property>
+		<property name="dataSource"><ref local="dataSource"/></property>
+	</bean>
+
+
+	<!-- ========================= DAO DEFINITIONS: IBATIS IMPLEMENTATIONS ========================= -->
+	<bean id="sequenceDaoAware" abstract="true">
+		<property name="dataSource"><ref local="dataSource"/></property>
+		<property name="columnName"><value>id</value></property>
+		<property name="cacheSize"><value>10</value></property>
+	</bean>
+
+
+	<bean id="caseDao" class="com.hoodox.operon.persistence.ibatis.sqlmapdao.CaseSqlMapDao">
+		<property name="sqlMapClient"><ref local="operonSqlMapClient"/></property>
+		<property name="caseSequenceDao"><ref local="caseSequenceDao"/></property>
+		<property name="taskSequenceDao"><ref local="taskSequenceDao"/></property>
+		<property name="tokenSequenceDao"><ref local="tokenSequenceDao"/></property>
+		<property name="eventAuditSequenceDao"><ref local="eventAuditSequenceDao"/></property>
+	</bean>
+
+	<!-- Refers to the combined database here -->
+	<!-- (see dataAccessContext-jta.xml for an alternative) -->
+	<!-- sequences -->
+	<bean id="caseSequenceDao" class="org.springframework.jdbc.support.incrementer.MySQLMaxValueIncrementer" 
+		singleton="true"
+		parent="sequenceDaoAware">
+		<property name="incrementerName"><value>operon_case_sequence</value></property>
+	</bean>
+
+	<bean id="taskSequenceDao" class="org.springframework.jdbc.support.incrementer.MySQLMaxValueIncrementer" 
+		singleton="true"
+		parent="sequenceDaoAware">
+		<property name="incrementerName"><value>operon_task_sequence</value></property>
+	</bean>
+
+	<bean id="tokenSequenceDao" class="org.springframework.jdbc.support.incrementer.MySQLMaxValueIncrementer" 
+		singleton="true"
+		parent="sequenceDaoAware">
+		<property name="incrementerName"><value>operon_token_sequence</value></property>
+	</bean>
+
+	<bean id="eventAuditSequenceDao" class="org.springframework.jdbc.support.incrementer.MySQLMaxValueIncrementer" 
+		singleton="true"
+		parent="sequenceDaoAware">
+		<property name="incrementerName"><value>operon_event_audit_sequence</value></property>
+	</bean>
+		
+</beans>

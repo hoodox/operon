@@ -1,0 +1,56 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.hoodox.operon</groupId>
+		<artifactId>operon-parent</artifactId>
+		<version>1.0.1</version>
+		<relativePath>../parent-pom</relativePath>
+	</parent>
+	<groupId>com.hoodox.operon.maven.pnml</groupId>
+	<artifactId>maven-operon-woped-merge-plugin</artifactId>
+	<packaging>maven-plugin</packaging>
+	<name>maven-operon-woped-merge-plugin</name>
+	<description>
+  	Maven-plugin to merge Operon and Woped PNML files.
+  	</description>
+
+	<properties>
+		<maven-plugin-api.version>2.0</maven-plugin-api.version>
+		<maven-plugin-testing-harness.version>1.2</maven-plugin-testing-harness.version>
+		<opnmlJAXB.version>${project.version}</opnmlJAXB.version>
+		<operon.version>${project.version}</operon.version>		
+		<hoodox-commons.version>1.0.2</hoodox-commons.version>
+		<slf4j-log4j12.version>1.5.2</slf4j-log4j12.version>		
+		<testng.version>5.8</testng.version>		
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-plugin-api</artifactId>
+			<version>${maven-plugin-api.version}</version>
+		</dependency>
+	    <dependency>
+	      <groupId>org.apache.maven.plugin-testing</groupId>
+	      <artifactId>maven-plugin-testing-harness</artifactId>
+	      <version>${maven-plugin-testing-harness.version}</version>
+	      <scope>test</scope>
+	    </dependency>		
+		<dependency>
+			<groupId>com.hoodox.commons</groupId>
+			<artifactId>hoodox-commons</artifactId>
+			<version>${hoodox-commons.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.hoodox.operon</groupId>
+			<artifactId>operon</artifactId>
+			<version>${operon.version}</version>
+		</dependency>		
+		<dependency>
+			<groupId>com.hoodox.operon</groupId>
+			<artifactId>opnmlJAXB</artifactId>
+			<version>${opnmlJAXB.version}</version>
+		</dependency>		
+	</dependencies>
+</project>

@@ -1,0 +1,13 @@
+drop table if exists config_repository;
+drop table if exists operon_ttl_scheduler;
+drop table if exists operon_event_audit;
+drop table if exists operon_time_trigger_scheduler;
+drop table if exists operon_token_enabled_task;
+drop table if exists operon_token_place_ref;
+drop table if exists operon_token;
+drop table if exists operon_task;
+drop table if exists operon_case;
+drop table if exists operon_case_sequence;
+drop table if exists operon_task_sequence;
+drop table if exists operon_token_sequence;
+drop table if exists operon_event_audit_sequence;

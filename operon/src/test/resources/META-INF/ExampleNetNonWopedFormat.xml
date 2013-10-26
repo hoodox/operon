@@ -1,0 +1,557 @@
+
+	<!--
+		edited with XML Spy v4.2 U (http://www.xmlspy.com) by Information
+		Technology (Information Technology)
+	-->
+	<!-- An example -->
+<pnml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../../../../documents/xsd/pnml-operon.xsd">
+	<!--
+		***********************************************************************
+		PETRINET STUFF
+		***********************************************************************
+	-->
+	<net id="SampleNet" type="SampleNet">
+		<name>
+			<text>SampleNet</text>
+		</name>
+		<!--
+			***********************************************************************
+			Places type: start, intermediate, end 1. Only one end and one start
+			in a net
+			***********************************************************************
+		-->
+		<place id="A">
+			<name>
+				<text>A</text>
+			</name>
+			<graphics>
+				<position x="28" y="53" />
+				<dimension x="40" y="40" />
+			</graphics>
+			<initialMarking>
+				<text>1</text>
+			</initialMarking>
+			<toolspecific tool="Operon" version="1.0">
+				<sourcePlace>
+					<postCreateCaseAction>com.hoodox.operon.actions.NullPostCreateCaseAction</postCreateCaseAction>
+					<resources>
+						<defaultId>packerGroup</defaultId>
+					</resources>
+				</sourcePlace>
+			</toolspecific>
+		</place>
+		<place id="B">
+			<name>
+				<text>B</text>
+			</name>
+			<graphics>
+				<position x="133" y="152" />
+				<dimension x="40" y="40" />
+			</graphics>
+		</place>
+		<place id="C">
+			<name>
+				<text>C</text>
+			</name>
+			<graphics>
+				<position x="131" y="399" />
+				<dimension x="40" y="40" />
+			</graphics>
+		</place>
+		<place id="D">
+			<name>
+				<text>D</text>
+			</name>
+			<graphics>
+				<position x="277" y="54" />
+				<dimension x="40" y="40" />
+			</graphics>
+		</place>
+		<place id="E">
+			<name>
+				<text>E</text>
+			</name>
+			<graphics>
+				<position x="435" y="161" />
+				<dimension x="40" y="40" />
+			</graphics>
+		</place>
+		<place id="F">
+			<name>
+				<text>F</text>
+			</name>
+			<graphics>
+				<position x="277" y="281" />
+				<dimension x="40" y="40" />
+			</graphics>
+		</place>
+		<place id="G">
+			<name>
+				<text>G</text>
+			</name>
+			<graphics>
+				<position x="551" y="55" />
+				<dimension x="40" y="40" />
+			</graphics>
+		</place>
+		<place id="J">
+			<name>
+				<text>J</text>
+			</name>
+			<graphics>
+				<position x="672" y="469" />
+				<dimension x="40" y="40" />
+			</graphics>
+		</place>
+		<place id="K">
+			<name>
+				<text>K</text>
+			</name>
+			<graphics>
+				<position x="198" y="532" />
+				<dimension x="40" y="40" />
+			</graphics>
+			<toolspecific tool="Operon" version="1.0">
+				<sinkPlace>true</sinkPlace>
+			</toolspecific>
+		</place>
+		<!--
+			***********************************************************************
+			Transition 1. Four possible trigger-types manual, auto, time, message
+			(a) AUTO - this is the default, transition is automatically triggered
+			once the transition is in READY state. Transition will FINISH when
+			all the actions of the Transition tasks has FINISHED. (b) MANUAL -
+			each status after READY has to be triggered externally, i.e. an
+			external trigger is required to START the transition and an external
+			trigger lto et the Petrinet know that the transition has FINISHED.
+
+			(c) TIME - An enabled task instance is triggered by a clock, i.e.,
+			the task is executed at a predefined time. For example, the task
+			'remove document' is triggered if a case is trapped in a specific
+			state for more than 15 hours. Once startedTransition will FINISH when
+			all the actions of the Transition tasks has FINISHED. (d) MESSAGE -
+			An external event (i.e. a message) triggers an enabled task instance.
+			Examples of messages are telephone-calls, fax messages, e-mails or
+			EDI messages. Each of these external events will probably require
+			some action within an application task so that the workflow system is
+			made aware that the event has taken place.Once this trggers is pulled
+			the transition will execute and end automatically.
+			**********************************************************************
+		-->
+		<transition id="ChargeCreditCard">
+			<name>
+				<text>ChargeCreditCard</text>
+			</name>
+			<graphics>
+				<position x="134" y="53" />
+				<dimension x="40" y="40" />
+			</graphics>
+			<toolspecific tool="Operon" version="1.0">
+				<transitionType type="XOR_split" />
+				<autoTrigger>
+					<executionTimeLimit>
+						<duration>0-0-10-0</duration>
+					</executionTimeLimit>
+				</autoTrigger>
+				<task>
+					<priorityWeighting>1</priorityWeighting>
+					<estimatedCompletionTime>
+						<duration>0-0-10-0</duration>
+					</estimatedCompletionTime>
+					<action>com.hoodox.operon.actions.NullPostCreateCaseAction</action>
+				</task>
+			</toolspecific>
+		</transition>
+		<transition id="Pack">
+			<name>
+				<text>Pack</text>
+			</name>
+			<graphics>
+				<position x="435" y="55" />
+				<dimension x="40" y="40" />
+			</graphics>
+			<toolspecific tool="Operon" version="1.0">
+				<transitionType type="XOR_split" />
+				<manualTrigger>
+					<resources>
+						<defaultId>packerGroup</defaultId>
+					</resources>
+				</manualTrigger>
+				<!--
+					A Task contains many actions, For manual the actions will only be
+					excuted when user choses to FINISH
+				-->
+				<task>
+					<priorityWeighting>1</priorityWeighting>
+					<estimatedCompletionTime>
+						<duration>0-3-0-0</duration>
+					</estimatedCompletionTime>
+					<action>com.hoodox.operon.actions.NullAction</action>
+				</task>
+			</toolspecific>
+		</transition>
+		<transition id="Ship">
+			<name>
+				<text>Ship</text>
+			</name>
+			<graphics>
+				<position x="674" y="55" />
+				<dimension x="40" y="40" />
+			</graphics>
+			<toolspecific tool="Operon" version="1.0">
+				<transitionType type="normal" />
+				<manualTrigger>
+					<resources>
+						<defaultId>ShipperGroup</defaultId>
+					</resources>
+				</manualTrigger>
+				<task>
+					<priorityWeighting>1</priorityWeighting>
+					<estimatedCompletionTime>
+						<duration>5-0-0-0</duration>
+					</estimatedCompletionTime>
+					<action>com.hoodox.operon.actions.NullAction</action>
+				</task>
+			</toolspecific>
+		</transition>
+		<transition id="SpamCustomer">
+			<name>
+				<text>SpamCustomer</text>
+			</name>
+			<graphics>
+				<position x="133" y="240" />
+				<dimension x="40" y="40" />
+			</graphics>
+			<toolspecific tool="Operon" version="1.0">
+				<transitionType type="normal" />
+				<timeTrigger>
+					<executionTimeLimit>
+						<duration>0-0-10-0</duration>
+					</executionTimeLimit>
+					<explicitTriggerDelayDuration>
+						<duration>0-0-0-30</duration>
+					</explicitTriggerDelayDuration>
+				</timeTrigger>
+				<task>
+					<priorityWeighting>1</priorityWeighting>
+					<estimatedCompletionTime>
+						<duration>0-0-10-0</duration>
+					</estimatedCompletionTime>
+					<action>com.hoodox.operon.actions.NullAction</action>
+				</task>
+			</toolspecific>
+		</transition>
+		<transition id="UpdateBillingInfo">
+			<name>
+				<text>UpdateBillingInfo</text>
+			</name>
+			<graphics>
+				<position x="28" y="469" />
+				<dimension x="40" y="40" />
+			</graphics>
+			<toolspecific tool="Operon" version="1.0">
+				<transitionType type="XOR_split" />
+				<messageTrigger>
+					<resources>
+						<defaultId>systemGroup</defaultId>
+					</resources>
+				</messageTrigger>
+				<task>
+					<priorityWeighting>1</priorityWeighting>
+					<estimatedCompletionTime>
+						<duration>0-0-10-0</duration>
+					</estimatedCompletionTime>
+					<!--
+						For message triggers the actions will only be excuted from START
+						to FINISH
+					-->
+					<action>com.hoodox.operon.actions.NullAction</action>
+				</task>
+			</toolspecific>
+		</transition>
+		<transition id="CancelOrder">
+			<name>
+				<text>CancelOrder</text>
+			</name>
+			<graphics>
+				<position x="342" y="401" />
+				<dimension x="40" y="40" />
+			</graphics>
+			<toolspecific tool="Operon" version="1.0">
+				<transitionType type="normal" />
+				<timeTrigger>
+					<executionTimeLimit>
+						<duration>0-0-10-0</duration>
+					</executionTimeLimit>
+					<implicitTriggerDelayDuration>
+						<!--
+							only use when trigger is time, add days + hours + mins + seconds
+						-->
+						<duration>0-0-2-0</duration>
+						<schedulerToUse ref="Every5Mins" />
+					</implicitTriggerDelayDuration>
+				</timeTrigger>
+				<!-- A Task contains many actions-->
+				<task>
+					<priorityWeighting>1</priorityWeighting>
+					<estimatedCompletionTime>
+						<duration>0-0-10-0</duration>
+					</estimatedCompletionTime>
+					<action>com.hoodox.operon.actions.NullAction</action>
+				</task>
+			</toolspecific>
+		</transition>
+		<transition id="BackOrder">
+			<name>
+				<text>BackOrder</text>
+			</name>
+			<graphics>
+				<position x="435" y="283" />
+				<dimension x="40" y="40" />
+			</graphics>
+			<toolspecific tool="Operon" version="1.0">
+				<transitionType type="normal" />
+				<manualTrigger>
+					<resources>
+						<defaultId>systemGroup</defaultId>
+					</resources>
+				</manualTrigger>
+				<task>
+					<priorityWeighting>1</priorityWeighting>
+					<estimatedCompletionTime>
+						<duration>0-0-10-0</duration>
+					</estimatedCompletionTime>
+					<action>com.hoodox.operon.actions.NullAction</action>
+				</task>
+			</toolspecific>
+		</transition>
+		<transition id="Receive">
+			<name>
+				<text>Receive</text>
+			</name>
+			<graphics>
+				<position x="275" y="166" />
+				<dimension x="40" y="40" />
+			</graphics>
+			<toolspecific tool="Operon" version="1.0">
+				<transitionType type="normal" />
+				<manualTrigger>
+					<resources>
+						<defaultId>systemGroup</defaultId>
+					</resources>
+				</manualTrigger>
+				<task>
+					<priorityWeighting>1</priorityWeighting>
+					<estimatedCompletionTime>
+						<duration>0-0-10-0</duration>
+					</estimatedCompletionTime>
+					<action>com.hoodox.operon.actions.NullAction</action>
+				</task>
+			</toolspecific>
+		</transition>
+		<!--
+			***********************************************************************
+			There are 2 Directions 1. IN - from a Place into a Transition 2. OUT
+			- from a Transition out to a place There are 7 different arcTypes:
+
+			type: start, intermediate, end 1. normal - ordinary sequential flow
+			2. XOR-split Explicit OR split 3. OR-split Implicit OR split 4.
+			OR-join implicit OR join 5. XOR-join Explicit OR join 6. AND-split
+			AND split 7. AND-join AND join
+			***********************************************************************
+		-->
+		<arc id="a1" source="A" target="ChargeCreditCard">
+		</arc>
+		<arc id="a2" source="ChargeCreditCard" target="D">
+			<toolspecific tool="Operon" version="1.0">
+				<guardExpression>success</guardExpression>
+			</toolspecific>
+		</arc>
+		<arc id="a3" source="ChargeCreditCard" target="B">
+			<toolspecific tool="Operon" version="1.0">
+				<guardExpression>failure</guardExpression>
+			</toolspecific>
+		</arc>
+		<arc id="a4" source="B" target="SpamCustomer">
+		</arc>
+		<arc id="a5" source="SpamCustomer" target="C">
+		</arc>
+		<arc id="a6" source="C" target="UpdateBillingInfo">
+		</arc>
+		<arc id="a7" source="C" target="CancelOrder">
+		</arc>
+		<arc id="a8" source="UpdateBillingInfo" target="J">
+			<toolspecific tool="Operon" version="1.0">
+				<guardExpression>cancelled</guardExpression>
+			</toolspecific>
+		</arc>
+		<arc id="a9" source="UpdateBillingInfo" target="A">
+			<toolspecific tool="Operon" version="1.0">
+				<guardExpression>updated</guardExpression>
+			</toolspecific>
+		</arc>
+		<arc id="a10" source="CancelOrder" target="J">
+		</arc>
+		<arc id="a11" source="D" target="Pack">
+		</arc>
+		<arc id="a12" source="Pack" target="G">
+			<toolspecific tool="Operon" version="1.0">
+				<guardExpression>complete</guardExpression>
+			</toolspecific>
+		</arc>
+		<arc id="a13" source="Pack" target="E">
+			<toolspecific tool="Operon" version="1.0">
+				<guardExpression>incomplete</guardExpression>
+			</toolspecific>
+		</arc>
+		<arc id="a14" source="E" target="BackOrder">
+		</arc>
+		<arc id="a15" source="BackOrder" target="F">
+		</arc>
+		<arc id="a16" source="F" target="Receive">
+		</arc>
+		<arc id="a17" source="Receive" target="D">
+		</arc>
+		<arc id="a18" source="G" target="Ship">
+		</arc>
+		<arc id="a19" source="Ship" target="J">
+		</arc>
+
+		<toolspecific tool="Operon" version="1.0">
+			<!--
+				Specifies which resource manager implementation to use This is the
+				only part that we are required to implement in order to user the
+				framework.
+			-->
+			<resourceManagerInterface>com.hoodox.operon.resources.TestResourceManager</resourceManagerInterface>
+			<!--
+				This is Optional, if we wish to put a time limit for this net to
+				finish There are two types of timer execution 1. explicit - the
+				Scheduler will execute straight away once expired. 2. implicit - the
+				Scheduler will use one of the registered schedulers and only execute
+				at the next round trip. This can reduce memory since there is only a
+				finite number of jobs where as the explicit one will create a job
+				for every single case in memory.
+			-->
+			<implicitTimeToLive>
+				<!-- add days - hours - mins - seconds -->
+				<duration>10-0-0-0</duration>
+				<!-- 
+				Scheduler to use is active is triggerType is implicit.
+				-->
+				<schedulerToUse ref="Every5Mins" />
+			</implicitTimeToLive>
+			<!--
+				This is where we registered various types of Quartz Cron Triggers
+				Different types of triggers have different time time interval. Every
+				single Timed Transition will have a Scheduler id associated with it.
+				The Scheduler will be used to Trigger the Enbaled Time Transition
+			-->
+			<schedulerRegistry>
+				<scheduler id="Every5Mins">
+					<cronTriggerExpression>0 0/5 * * * ?</cronTriggerExpression>
+				</scheduler>
+			</schedulerRegistry>
+		</toolspecific>
+
+		<!--
+			***********************************************************************
+			Subnet
+			***********************************************************************
+		-->
+		<page id="MarketSurvey">
+			<net id="MarketSurveyNet" type="xys">
+				<name>
+					<text>MarketingSurvey</text>
+				</name>
+				<referencePlace ref="J" id="Sin">
+					<graphics>
+						<position x="53" y="43" />
+						<dimension x="20" y="20" />
+					</graphics>
+					<toolspecific tool="Operon" version="1.0">
+						<inrefPlace>
+							<createSubcasesAction>com.hoodox.operon.example.action.CreateSubcasesAction</createSubcasesAction>
+						</inrefPlace>
+					</toolspecific>
+				</referencePlace>
+				<referencePlace ref="K" id="Sout">
+					<graphics>
+						<position x="549" y="42" />
+						<dimension x="20" y="20" />
+					</graphics>
+					<toolspecific tool="Operon" version="1.0">
+						<outrefPlace>true</outrefPlace>
+					</toolspecific>
+				</referencePlace>				
+				<place id="SP1">
+					<name>
+						<text>SP1</text>
+					</name>
+					<graphics>
+						<position x="304" y="42" />
+						<dimension x="20" y="20" />
+					</graphics>
+				</place>
+				<transition id="CallCustomer">
+					<name>
+						<text>CallCustomer</text>
+					</name>
+					<graphics>
+						<position x="175" y="41" />
+						<dimension x="32" y="32" />
+					</graphics>
+					<toolspecific tool="Operon" version="1.0">
+						<transitionType type="normal" />
+						<manualTrigger>
+							<resources>
+								<defaultId>MarketGroup</defaultId>
+							</resources>
+						</manualTrigger>
+						<task>
+							<priorityWeighting>1</priorityWeighting>
+							<estimatedCompletionTime>
+								<duration>0-0-10-0</duration>
+							</estimatedCompletionTime>
+							<action>com.hoodox.operon.actions.NullAction</action>
+						</task>
+					</toolspecific>
+				</transition>
+				<transition id="SaveMarketData">
+					<name>
+						<text>SaveMarketData</text>
+					</name>
+					<graphics>
+						<position x="424" y="44" />
+						<dimension x="32" y="32" />
+					</graphics>
+					<toolspecific tool="Operon" version="1.0">
+						<transitionType type="normal" />
+						<messageTrigger>
+							<resources>
+								<defaultId>SystemGroup</defaultId>
+							</resources>
+						</messageTrigger>
+						<task>
+							<priorityWeighting>1</priorityWeighting>
+							<estimatedCompletionTime>
+								<duration>0-0-10-0</duration>
+							</estimatedCompletionTime>
+							<action>com.hoodox.operon.actions.NullAction</action>
+						</task>
+					</toolspecific>
+				</transition>
+				<arc id="sa1" source="Sin" target="CallCustomer">
+				</arc>
+				<arc id="sa2" source="CallCustomer" target="SP1">
+				</arc>
+				<arc id="sa3" source="SP1" target="SaveMarketData">
+				</arc>
+				<arc id="sa4" source="SaveMarketData" target="Sout">
+				</arc>
+
+			</net>
+		</page>
+	</net>
+</pnml>

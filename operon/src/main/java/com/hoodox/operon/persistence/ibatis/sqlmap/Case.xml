@@ -1,0 +1,485 @@
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<!-- The SQL in these maps files has purposely been typed with more verbosity than is actually required.
+ For example, many of the selects could have just used SELECT * FROM... instead of listing all of the columns.
+ This is to demonstrate that even complex SQL can be handled and coded and formatted the way SQL was meant
+ to be (i.e. not a bunch of concatenated strings in a Java class). -->
+
+<sqlMap namespace="Case">
+	<!--
+		********************************************
+		* CaseVo Queries/Operations
+		********************************************
+	-->		
+	<typeAlias alias="CaseVo" type="com.hoodox.operon.valueobjects.CaseVo"/>
+	<resultMap id="CaseVoResult" class="CaseVo">
+	  <result property="caseId" column="CASE_ID"/>  
+	  <result property="rootParentCaseId" column="ROOT_CASE_ID"/>
+	  <result property="parentCaseId" column="PARENT_CASE_ID"/>
+	  <result property="caseTypeRef" column="CASE_TYPE_REF"/>
+	  <result property="rootCaseTypeRef" column="ROOT_CASE_TYPE_REF"/>
+	  <result property="caseStatus" column="CASE_STATUS"/>
+	  <result property="expiryDate" column="EXPIRY_DATE"/>		
+	  <result property="lockVersion" column="LOCK_VERSION"/>		
+	  <result property="updatedDate" column="UPDATED_DATE"/>
+	  <result property="createdDate" column="CREATED_DATE"/>		
+	</resultMap>
+		
+	<sql id="selectCase_fragment">
+		select operon_case.CASE_ID, 
+				operon_case.ROOT_CASE_ID, 
+				operon_case.PARENT_CASE_ID, 
+				operon_case.CASE_TYPE_REF,
+				operon_case.ROOT_CASE_TYPE_REF,
+				operon_case.CASE_STATUS, 
+				operon_case.EXPIRY_DATE, 
+				operon_case.LOCK_VERSION, 
+				operon_case.UPDATED_DATE, 
+				operon_case.CREATED_DATE 
+		from operon_case	
+	</sql>
+	
+	<select id="getCaseById" resultMap="CaseVoResult" parameterClass="java.lang.Long">
+		<include refid="selectCase_fragment"/>
+		where operon_case.CASE_ID = #value#
+	</select>
+	
+	<select id="getSubCasesByParentId" resultMap="CaseVoResult" parameterClass="java.lang.Long">
+		<include refid="selectCase_fragment"/>
+		where operon_case.PARENT_CASE_ID = #value#
+	</select>
+
+	<select id="getAllSubCasesFromRootId" resultMap="CaseVoResult" parameterClass="java.lang.Long">
+		<include refid="selectCase_fragment"/>
+		where operon_case.PARENT_CASE_ID is not null
+				and operon_case.ROOT_CASE_ID = #value#
+	</select>
+	
+	<select id="findAllCasesDueToExpireByCronExp" resultMap="CaseVoResult" parameterClass="java.lang.String">
+		<include refid="selectCase_fragment"/>
+		inner join operon_ttl_scheduler
+			on operon_case.CASE_ID = operon_ttl_scheduler.CASE_ID
+		where operon_case.CASE_STATUS ='open'
+								and operon_case.PARENT_CASE_ID is null
+								and operon_case.EXPIRY_DATE is not null
+								and operon_case.EXPIRY_DATE &lt; now()
+								and operon_ttl_scheduler.CRON_EXP = #value#				
+	</select>
+			
+	<select id="howManySubcasesNotClosed" resultClass="java.lang.Integer" parameterClass="java.lang.Long">
+		select count(*) from operon_case
+		where operon_case.PARENT_CASE_ID = #value#
+			and operon_case.CASE_STATUS &lt;&gt; 'closed'	
+	</select>
+	
+	
+	<insert id="insertCase" parameterClass="CaseVo">
+		insert into operon_case (CASE_ID, ROOT_CASE_ID, PARENT_CASE_ID, CASE_TYPE_REF, ROOT_CASE_TYPE_REF, CASE_STATUS, EXPIRY_DATE, LOCK_VERSION, UPDATED_DATE, CREATED_DATE)
+		values (#caseId#, #rootParentCaseId#, #parentCaseId#, #caseTypeRef#, #rootCaseTypeRef#, #caseStatus#,  #expiryDate#, #lockVersion#, #updatedDate#,#createdDate#)
+	 </insert>
+
+	<update id="updateCaseStatus" parameterClass="java.util.Map"> 
+		UPDATE operon_case 
+			SET operon_case.CASE_STATUS=#caseStatus#, 
+				operon_case.LOCK_VERSION=#newLockVersion#,
+				operon_case.UPDATED_DATE=#updatedDate#
+		WHERE operon_case.CASE_ID=#caseId#
+			  AND LOCK_VERSION = #currentLockVersion#
+    </update> 
+
+	<select id="findAllExistingOpenCaseCronExp" resultClass="java.lang.String">
+		(select operon_time_trigger_scheduler.CRON_EXP  
+		from operon_time_trigger_scheduler
+		INNER JOIN operon_task
+		ON operon_time_trigger_scheduler.TASK_ID = operon_task.TASK_ID
+				 INNER JOIN operon_case as assoc_case
+					ON operon_task.CASE_ID = assoc_case.CASE_ID
+				  where operon_task.TASK_STATUS = 'enabled'				 		
+					and operon_task.START_AT_STARTUP = 1
+					and operon_task.TRIGGER_TIME is not null			
+					and operon_task.TRIGGER_TIME &gt; CURRENT_TIMESTAMP
+					and assoc_case.CASE_STATUS = 'open'
+					and assoc_case.ROOT_CASE_ID 
+							in (select operon_case.CASE_ID 
+									from operon_case 
+									where operon_case.PARENT_CASE_ID is null
+										and operon_case.CASE_STATUS = 'open'))
+		union
+		(select operon_ttl_scheduler.CRON_EXP  
+		from operon_ttl_scheduler
+			INNER JOIN operon_case
+				ON operon_case.CASE_ID = operon_ttl_scheduler.CASE_ID
+		where operon_case.CASE_STATUS = 'open')		
+	</select>
+		
+	
+	<!--
+		********************************************
+		* TimeToLiveScheduler Queries/Operations
+		********************************************
+	-->						
+	<typeAlias alias="TimeToLiveSchedulerVo" type="com.hoodox.operon.valueobjects.TimeToLiveSchedulerVo"/>
+	<resultMap id="TimeToLiveSchedulerVoResult" class="TimeToLiveSchedulerVo">
+	  <result property="caseId" column="CASE_ID"/>  
+	  <result property="schedulerRef" column="SCHEDULER_REF"/>
+	  <result property="cronExp" column="CRON_EXP"/>
+	  <result property="updatedDate" column="UPDATED_DATE"/>
+	  <result property="createdDate" column="CREATED_DATE"/>
+	</resultMap>
+
+	<insert id="insertTimeToLiveScheduler" parameterClass="TimeToLiveSchedulerVo">
+		insert into operon_ttl_scheduler (CASE_ID, SCHEDULER_REF, CRON_EXP, UPDATED_DATE, CREATED_DATE)
+		values (#caseId#, #schedulerRef#, #cronExp#, #updatedDate#, #createdDate#)
+	 </insert>
+	
+	
+	<!--
+		********************************************
+		* TimeTriggerScheduler Queries/Operations
+		********************************************
+	-->		
+	
+	<typeAlias alias="TimeTriggerSchedulerVo" type="com.hoodox.operon.valueobjects.TimeTriggerSchedulerVo"/>
+	<resultMap id="TimeTriggerSchedulerVoResult" class="TimeTriggerSchedulerVo">
+	  <result property="taskId" column="TASK_ID"/>  
+	  <result property="schedulerRef" column="SCHEDULER_REF"/>
+	  <result property="cronExp" column="CRON_EXP"/>
+	  <result property="createdDate" column="CREATED_DATE"/>
+	</resultMap>
+
+	<insert id="insertTimeTriggerScheduler" parameterClass="TimeTriggerSchedulerVo">
+		insert into operon_time_trigger_scheduler (TASK_ID, SCHEDULER_REF, CRON_EXP, UPDATED_DATE, CREATED_DATE)
+		values (#taskId#, #schedulerRef#, #cronExp#, #updatedDate#, #createdDate#)
+	 </insert>
+	
+	<!--
+		********************************************
+		* TokenPlaceRef Queries/Operations
+		********************************************
+	-->		
+	<typeAlias alias="TokenVo" type="com.hoodox.operon.valueobjects.TokenVo"/>
+	<resultMap id="TokenVoResult" class="TokenVo">
+	  <result property="tokenId" column="TOKEN_ID"/>  
+	  <result property="tokenStatus" column="TOKEN_STATUS"/>
+	  <result property="lockByTaskId" column="LOCK_BY_TASK_ID"/>
+	  <result property="lockVersion" column="LOCK_VERSION"/>
+	  <result property="updatedDate" column="UPDATED_DATE"/>
+	  <result property="createdDate" column="CREATED_DATE"/>		
+	</resultMap>
+
+	<insert id="insertToken" parameterClass="TokenVo">
+		insert into operon_token (TOKEN_ID, TOKEN_STATUS, LOCK_BY_TASK_ID, LOCK_VERSION, UPDATED_DATE, CREATED_DATE)
+		values (#tokenId#, #tokenStatus#, #lockByTaskId#,#lockVersion#, #updatedDate#, #createdDate#)
+	 </insert>
+
+	<update id="updateToken" parameterClass="java.util.Map"> 
+		UPDATE operon_token 
+			SET TOKEN_STATUS=#tokenStatus#, 
+				LOCK_VERSION=#newLockVersion#,
+				UPDATED_DATE=#updatedDate#,
+				LOCK_BY_TASK_ID = #lockByTaskId#
+		WHERE TOKEN_ID=#tokenId#
+				AND LOCK_VERSION = #currentLockVersion#    
+	</update> 
+		
+	<sql id="selectToken_fragment">
+		select operon_token.TOKEN_ID,
+				operon_token.TOKEN_STATUS,
+				operon_token.LOCK_BY_TASK_ID,
+				operon_token.LOCK_VERSION,
+				operon_token.UPDATED_DATE,
+				operon_token.CREATED_DATE
+		from operon_token
+	</sql>
+	
+	<select id="findTokensThatEnabledTask" resultMap="TokenVoResult" parameterClass="java.util.Map">
+		<include refid="selectToken_fragment"/>
+			INNER JOIN operon_token_enabled_task
+				ON operon_token.TOKEN_ID = operon_token_enabled_task.TOKEN_ID  
+		where operon_token.TOKEN_STATUS = #tokenStatus#
+				and operon_token_enabled_task.TASK_ID = #taskId#		
+	</select>
+	
+	
+	
+	<typeAlias alias="TokenPlaceRefVo" type="com.hoodox.operon.valueobjects.TokenPlaceRefVo"/>
+	<resultMap id="TokenPlaceRefVoResult" class="TokenPlaceRefVo">
+	  <result property="tokenId" column="TOKEN_ID"/>  
+	  <result property="tokenVo.tokenStatus" column="TOKEN_STATUS"/>
+	  <result property="tokenVo.lockByTaskId" column="LOCK_BY_TASK_ID"/>
+	  <result property="tokenVo.lockVersion" column="LOCK_VERSION"/>
+	  <result property="caseId" column="CASE_ID"/>
+	  <result property="placeRef" column="PLACE_REF"/>
+	  <result property="placeRefType" column="PLACE_REF_TYPE"/>
+	</resultMap>
+
+	<insert id="insertTokenPlaceRef" parameterClass="TokenPlaceRefVo">
+		insert into operon_token_place_ref (TOKEN_ID, CASE_ID, PLACE_REF, PLACE_REF_TYPE, UPDATED_DATE, CREATED_DATE)
+		values (#tokenId#, #caseId#, #placeRef#,#placeRefType#, #updatedDate#, #createdDate#)
+	 </insert>
+	
+	<insert id="insertTokenEnbaledTask" parameterClass="java.util.Map">
+		insert into operon_token_enabled_task (TOKEN_ID, TASK_ID, CREATED_DATE)
+		values (#tokenId#, #taskId#, #createdDate#)
+	 </insert>
+		
+	<select id="findTokenPlaceRefByCaseId" resultMap="TokenPlaceRefVoResult" parameterClass="java.util.Map">
+	  select
+			operon_token_place_ref.TOKEN_ID,
+			operon_token_place_ref.CASE_ID,
+			operon_token_place_PLACE_REF,
+			operon_token_place_ref.PLACE_REF_TYPE,
+			operon_token.TOKEN_STATUS,
+			operon_token.LOCK_BY_TASK_ID,
+			operon_token.LOCK_VERSION	  
+	  from operon_token_place_ref
+		  INNER JOIN operon_token
+			ON operon_token_place_ref.TOKEN_ID = operon_token.TOKEN_ID
+	  where operon_token_place_ref.CASE_ID = #caseId#
+		and operon_token.TOKEN_STATUS =#tokenStatus#
+	</select>
+
+	
+	
+	
+	<!--
+		********************************************
+		* Task Queries/Operations
+		********************************************
+	-->			
+	<typeAlias alias="TaskVo" type="com.hoodox.operon.valueobjects.TaskVo"/>
+	<resultMap id="TaskVoResult" class="TaskVo">
+	  <result property="taskId" column="TASK_ID"/>  
+	  <result property="taskStatus" column="TASK_STATUS"/>
+	  <result property="triggerTime" column="TRIGGER_TIME"/>
+	  <result property="wfnetTransitionRef" column="WFNET_TRANSITION_REF"/>
+	  <result property="inProgressTimeout" column="IN_PROGRESS_TIMEOUT_DATE"/>
+	  <result property="retryCount" column="RETRY_COUNT"/>
+	  <result property="priorityWeighting" column="PRIORITY_WEIGHTING"/>
+	  <result property="expectedCompletionDate" column="EXPECTED_COMPLETION_DATE"/>
+	  <result property="actualCompletionDate" column="ACTUAL_COMPLETION_DATE"/>
+	  <result property="startAtStartup" column="START_AT_STARTUP"/>
+	  <result property="lockVersion" column="LOCK_VERSION"/>
+	  <result property="updatedDate" column="UPDATED_DATE"/>
+	  <result property="createdDate" column="CREATED_DATE"/>
+	  <result property="caseVo.caseId" column="CASE_ID"/>  
+	  <result property="caseVo.rootParentCaseId" column="ROOT_CASE_ID"/>
+	  <result property="caseVo.parentCaseId" column="PARENT_CASE_ID"/>
+	  <result property="caseVo.caseTypeRef" column="CASE_TYPE_REF"/>
+	  <result property="caseVo.rootCaseTypeRef" column="ROOT_CASE_TYPE_REF"/>		
+	  <result property="caseVo.caseStatus" column="CASE_STATUS"/>
+	  <result property="caseVo.expiryDate" column="CASE_EXPIRY_DATE"/>		
+	  <result property="caseVo.lockVersion" column="CASE_LOCK_VERSION"/>		
+	  <result property="caseVo.updatedDate" column="CASE_UPDATED_DATE"/>
+	  <result property="caseVo.createdDate" column="CASE_CREATED_DATE"/>		
+	</resultMap>
+	
+	<sql id="selectTask_fragment">
+		select operon_task.TASK_ID, 
+				operon_task.CASE_ID, 
+				operon_task.TASK_STATUS, 
+				operon_task.TRIGGER_TIME, 
+				operon_task.WFNET_TRANSITION_REF, 
+				operon_task.START_AT_STARTUP, 
+				operon_task.IN_PROGRESS_TIMEOUT_DATE, 
+				operon_task.RETRY_COUNT, 
+				operon_task.PRIORITY_WEIGHTING, 
+				operon_task.EXPECTED_COMPLETION_DATE,
+				operon_task.ACTUAL_COMPLETION_DATE, 
+				operon_task.LOCK_VERSION, 
+				operon_task.UPDATED_DATE, 
+				operon_task.CREATED_DATE,
+				assoc_case.ROOT_CASE_ID, 
+				assoc_case.PARENT_CASE_ID, 
+				assoc_case.CASE_TYPE_REF,
+				assoc_case.ROOT_CASE_TYPE_REF,		 
+				assoc_case.CASE_STATUS, 
+				assoc_case.EXPIRY_DATE as CASE_EXPIRY_DATE, 
+				assoc_case.LOCK_VERSION as CASE_LOCK_VERSION, 
+				assoc_case.UPDATED_DATE as CASE_UPDATED_DATE, 
+				assoc_case.CREATED_DATE as CASE_CREATED_DATE				
+		from operon_task
+		 INNER JOIN operon_case as assoc_case
+			ON operon_task.CASE_ID = assoc_case.CASE_ID
+	</sql>
+
+	<insert id="insertTask" parameterClass="TaskVo">
+	  insert into operon_task (TASK_ID, CASE_ID, TASK_STATUS, TRIGGER_TIME,WFNET_TRANSITION_REF, IN_PROGRESS_TIMEOUT_DATE, RETRY_COUNT, PRIORITY_WEIGHTING, EXPECTED_COMPLETION_DATE, ACTUAL_COMPLETION_DATE, START_AT_STARTUP, LOCK_VERSION, UPDATED_DATE, CREATED_DATE)
+	  values (#taskId#, #caseVo.caseId#, #taskStatus#, #triggerTime#, #wfnetTransitionRef#,#inProgressTimeout#, #retryCount#,#priorityWeighting#,#expectedCompletionDate#,#actualCompletionDate#,#startAtStartup#,#lockVersion#,#updatedDate#,#createdDate#)
+	</insert>
+
+	<update id="updateTaskStatus" parameterClass="java.util.Map"> 
+		UPDATE operon_task 
+			SET TASK_STATUS=#taskStatus#, 
+                LOCK_VERSION=#newLockVersion#,
+				UPDATED_DATE=#updatedDate#,
+				RETRY_COUNT=#retryCount#,
+				ACTUAL_COMPLETION_DATE=#actualCompletionDate#,
+				IN_PROGRESS_TIMEOUT_DATE=#inProgressTimeout#
+            WHERE TASK_ID=#taskId#
+				AND LOCK_VERSION = #currentLockVersion#
+    </update> 
+		
+	<select id="findTasksBy_StatusAndCaseId" resultMap="TaskVoResult">
+		<include refid="selectTask_fragment"/>
+		  where assoc_case.CASE_ID =#caseId#
+				and operon_task.TASK_STATUS = #taskStatus#				 		
+	</select>
+
+	<select id="findTasksBy_StatusAndRootCaseId" resultMap="TaskVoResult">
+		<include refid="selectTask_fragment"/>
+		  where assoc_case.ROOT_CASE_ID =#rootCaseId#
+				and operon_task.TASK_STATUS = #taskStatus#				 		
+	</select>
+	
+	<select id="findTasksBy_tokenId_taskStatus" resultMap="TaskVoResult">
+		<include refid="selectTask_fragment"/>
+		 INNER JOIN operon_token_enabled_task
+			ON operon_token_enabled_task.TASK_ID = operon_task.TASK_ID
+		  where operon_token_enabled_task.TOKEN_ID =#tokenId#
+				and operon_task.TASK_STATUS = #taskStatus#				 		
+	</select>
+
+	<select id="findTimeoutActivities" resultMap="TaskVoResult">
+		<include refid="selectTask_fragment"/>
+		  where operon_task.TASK_STATUS = 'in_progress'				 		
+			and operon_task.IN_PROGRESS_TIMEOUT_DATE is not null
+			and operon_task.IN_PROGRESS_TIMEOUT_DATE &lt; CURRENT_TIMESTAMP
+			and assoc_case.CASE_STATUS = 'open'
+			and assoc_case.ROOT_CASE_ID 
+					in (select operon_case.CASE_ID 
+							from operon_case 
+							where operon_case.PARENT_CASE_ID is null
+								and operon_case.CASE_STATUS = 'open')	
+	</select>
+
+	<select id="findActivitiesAwaitingRetry" resultMap="TaskVoResult">
+		<include refid="selectTask_fragment"/>
+		  where operon_task.TASK_STATUS = 'await_retry'			
+			and assoc_case.CASE_STATUS = 'open'
+			and assoc_case.ROOT_CASE_ID 
+					in (select operon_case.CASE_ID 
+							from operon_case 
+							where operon_case.PARENT_CASE_ID is null
+								and operon_case.CASE_STATUS = 'open')	
+	</select>
+			
+	<select id="findActivitiesForStartup" resultMap="TaskVoResult">
+		<include refid="selectTask_fragment"/>
+		  where operon_task.TASK_STATUS = 'in_progress'				 		
+			and operon_task.START_AT_STARTUP = 1
+			and assoc_case.CASE_STATUS = 'open'
+			and assoc_case.ROOT_CASE_ID 
+					in (select operon_case.CASE_ID 
+							from operon_case 
+							where operon_case.PARENT_CASE_ID is null
+								and operon_case.CASE_STATUS = 'open')	
+	</select>
+
+	<select id="findAutoWorkItemsForStartup" resultMap="TaskVoResult">
+		<include refid="selectTask_fragment"/>
+		  where operon_task.TASK_STATUS = 'enabled'				 		
+			and operon_task.START_AT_STARTUP = 1
+			and operon_task.TRIGGER_TIME is null
+			and assoc_case.CASE_STATUS = 'open'
+			and assoc_case.ROOT_CASE_ID 
+					in (select operon_case.CASE_ID 
+							from operon_case 
+							where operon_case.PARENT_CASE_ID is null
+								and operon_case.CASE_STATUS = 'open')	
+	</select>
+
+	<select id="findOverdueTimedWorkItemsForStartup" resultMap="TaskVoResult">
+		<include refid="selectTask_fragment"/>
+		  where operon_task.TASK_STATUS = 'enabled'				 		
+			and operon_task.START_AT_STARTUP = 1
+			and operon_task.TRIGGER_TIME is not null			
+			and operon_task.TRIGGER_TIME &lt; CURRENT_TIMESTAMP
+			and assoc_case.CASE_STATUS = 'open'
+			and assoc_case.ROOT_CASE_ID 
+					in (select operon_case.CASE_ID 
+							from operon_case 
+							where operon_case.PARENT_CASE_ID is null
+								and operon_case.CASE_STATUS = 'open')	
+	</select>
+
+	<select id="findNotOverdueExplicitTimedWorkItemsForStartup" resultMap="TaskVoResult">
+		<include refid="selectTask_fragment"/>
+		  where operon_task.TASK_STATUS = 'enabled'				 		
+			and operon_task.START_AT_STARTUP = 1
+			and operon_task.TRIGGER_TIME is not null			
+			and operon_task.TRIGGER_TIME > CURRENT_TIMESTAMP
+			and assoc_case.CASE_STATUS = 'open'
+			and assoc_case.ROOT_CASE_ID 
+					in (select operon_case.CASE_ID 
+							from operon_case 
+							where operon_case.PARENT_CASE_ID is null
+								and operon_case.CASE_STATUS = 'open')
+			and operon_task.TASK_ID 
+					not in ( select operon_time_trigger_scheduler.TASK_ID  
+									from operon_time_trigger_scheduler
+										INNER JOIN operon_task
+											ON operon_time_trigger_scheduler.TASK_ID = operon_task.TASK_ID
+		 								INNER JOIN operon_case as assoc_case
+											ON operon_task.CASE_ID = assoc_case.CASE_ID
+		  						where operon_task.TASK_STATUS = 'enabled'				 		
+												and operon_task.START_AT_STARTUP = 1
+												and operon_task.TRIGGER_TIME is not null			
+												and operon_task.TRIGGER_TIME &gt; CURRENT_TIMESTAMP
+												and assoc_case.CASE_STATUS = 'open'
+												and assoc_case.ROOT_CASE_ID 
+													in (select operon_case.CASE_ID 
+															from operon_case 
+															where operon_case.PARENT_CASE_ID is null
+															and operon_case.CASE_STATUS = 'open'))	
+	</select>
+		
+	<select id="findAllWorkItemsDueToStartByCronExp" resultMap="TaskVoResult">
+		<include refid="selectTask_fragment"/>
+			where operon_task.TASK_ID 
+						in (select operon_time_trigger_scheduler.TASK_ID
+								from operon_time_trigger_scheduler
+								inner join operon_task 
+									on operon_task.TASK_ID = operon_time_trigger_scheduler.TASK_ID
+								INNER JOIN operon_case as assoc_case
+									ON assoc_case.CASE_ID= operon_task.CASE_ID
+		  					where operon_time_trigger_scheduler.CRON_EXP = #value# 
+								and operon_task.TASK_STATUS = 'enabled'				 		
+								and operon_task.TRIGGER_TIME is not null			
+								and operon_task.TRIGGER_TIME &lt; CURRENT_TIMESTAMP
+								and assoc_case.CASE_STATUS = 'open'
+								and assoc_case.ROOT_CASE_ID 
+										in (select operon_case.CASE_ID 
+												from operon_case 
+												where operon_case.PARENT_CASE_ID is null
+													and operon_case.CASE_STATUS = 'open') )	
+	</select>
+	
+			
+	
+	<!--
+		********************************************
+		* EventAudit Queries/Operations
+		********************************************
+	-->			
+	<typeAlias alias="EventAuditVo" type="com.hoodox.operon.valueobjects.EventAuditVo"/>
+	<resultMap id="EventAuditVoResult" class="EventAuditVo">
+	  <result property="eventAuditId" column="EVENT_AUDIT_ID"/>  
+	  <result property="caseId" column="CASE_ID"/>
+	  <result property="taskId" column="TASK_ID"/>
+	  <result property="event" column="EVENT"/>
+	  <result property="initialStatus" column="INITIAL_STATUS"/>
+	  <result property="finalStatus" column="FINAL_STATUS"/>
+	  <result property="successInd" column="SUCCESS_IND"/>
+	  <result property="resourceId" column="RESOURCE_ID"/>
+	  <result property="errorCode" column="ERROR_CODE"/>
+	  <result property="errorDetail" column="ERROR_DETAIL"/>
+	  <result property="createdDate" column="CREATED_DATE"/>
+	</resultMap>
+
+  <insert id="insertEventAudit" parameterClass="EventAuditVo">
+    insert into operon_event_audit (EVENT_AUDIT_ID, CASE_ID, TASK_ID, EVENT, INITIAL_STATUS, FINAL_STATUS, SUCCESS_IND, RESOURCE_ID, ERROR_CODE, ERROR_DETAIL, CREATED_DATE)
+    values (#eventAuditId#, #caseId#, #taskId#, #event#, #initialStatus#,#finalStatus#, #successInd#,#resourceId#,#errorCode#,#errorDetail#,#createdDate#)
+  </insert>
+									
+</sqlMap>

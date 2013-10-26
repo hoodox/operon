@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!--
+		Created with Liquid XML Studio 1.0.7.0
+		(http://www.liquid-technologies.com)
+	-->
+<xsd:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified"
+	elementFormDefault="qualified">
+
+	<xsd:include schemaLocation="../xsd/pnml-common.xsd" />
+	<xsd:include schemaLocation="../xsd/operon-woped-merged.xsd" />
+
+	<xs:annotation>
+		<xs:documentation>
+			This is the XML Schema for PNML 1.3.2c
+			according the Specification
+			http://www.informatik.hu-berlin.de/top/PNX/download/ISO-IEC-15909-2-Draft.0.5.0.pdf
+			and the Relax NG Files:
+			(Basic PNML RNG) http://www.informatik.hu-berlin.de/top/pnml/basicPNML.rng
+			(PNML Type Extension PNTD)
+			http://www.informatik.hu-berlin.de/top/pntd/ptNetb
+			(RNG for label
+			graphics) http://www.informatik.hu-berlin.de/top/pnml/conv.rng
+			20.01.2005
+			Simon Landes (landes@woped.org)
+
+			Chung Hua
+			This has been modified to combine both Operon and Woped schemas.
+			This schema has all attributes of the toolspecific removed into a
+			operon-woped-merged.xsd file where it is merged there.
+			
+			The following are merged:
+			netToolspecificMergeType, placeToolspecificMergeType
+			referencePlaceToolspecificMergeType, transitionToolspecificMergeType,
+			arcToolspecificMergeType  	
+ 	</xs:documentation>
+	</xs:annotation>
+
+
+	<xs:element name="pnml" type="pnmlType" />
+	<xs:complexType name="pnmlType">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" name="net" type="netType" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="netNameType">
+		<xs:annotation>
+			<xs:documentation>
+			Extension see
+				"http://www.informatik.hu-berlin.de/top/pntd/ptNetb"
+			PetriNet 
+			</xs:documentation>
+		</xs:annotation>
+	</xs:complexType>
+	<xs:complexType name="netType">
+		<xs:sequence>
+			<xs:element minOccurs="0" name="name">
+				<xs:complexType>
+					<xs:complexContent mixed="false">
+						<xs:extension base="netNameType">
+							<xs:sequence>
+								<xs:element name="text" type="xs:string" />
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="referencePlace"
+				type="referencePlaceType" />			
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="place"
+				type="placeType" />
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="transition"
+				type="transitionType" />
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="arc"
+				type="arcType" />
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="toolspecific"
+				type="netToolspecificMergeType" />
+			<xs:element minOccurs="0" name="graphics" />
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="page">
+				<xs:complexType>
+					<xs:complexContent mixed="false">
+						<xs:extension base="pageType" />
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:ID" use="required" />
+		<xs:attribute name="type" type="xs:anyURI" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="placeType">
+		<xs:annotation>
+			<xs:documentation> Place Types</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent mixed="false">
+			<xs:extension base="nodeType">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="initialMarking">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="text" type="xs:string" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element minOccurs="0" maxOccurs="unbounded" name="toolspecific"
+						type="placeToolspecificMergeType" />
+				</xs:sequence>
+				<xs:attribute name="id" type="xs:ID" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="transitionType">
+		<xs:annotation>
+			<xs:documentation> Transition Types</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent mixed="false">
+			<xs:extension base="nodeType">
+				<xs:sequence>
+					<xs:element minOccurs="0" maxOccurs="unbounded" name="toolspecific"
+						type="transitionToolspecificMergeType" />
+				</xs:sequence>
+				<xs:attribute name="id" type="xs:ID" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="arcType">
+		<xs:annotation>
+			<xs:documentation> Arc Types</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="0" name="inscription" type="arcNameType" />
+			<xs:element minOccurs="0" name="graphics" type="graphicsArcType" />
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="toolspecific"
+				type="arcToolspecificMergeType" />
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:ID" use="required" />
+		<xs:attribute name="source" type="xs:IDREF" use="required" />
+		<xs:attribute name="target" type="xs:IDREF" use="required" />
+	</xs:complexType>
+	<xs:complexType name="pageType">
+		<xs:annotation>
+			<xs:documentation>structured &amp;amp; modular PNML Types</xs:documentation>
+    </xs:annotation>
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="net" type="netType" />
+    </xs:choice>
+    <xs:attribute name="id" type="xs:ID" />
+  </xs:complexType>
+  <xs:complexType name="referencePlaceType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="graphics" type="graphicsNodeType" />
+      <xs:element name="toolspecific" type="referencePlaceToolspecificMergeType" />
+    </xs:choice>
+    <xs:attribute name="id" type="xs:ID" use="required" />
+    <xs:attribute name="ref" type="xs:IDREF" use="required" />
+  </xs:complexType>
+
+</xsd:schema>

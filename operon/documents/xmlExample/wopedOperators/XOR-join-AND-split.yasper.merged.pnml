@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pnml>
+  <net type="http://www.yasper.org/specs/epnml-1.1" id="noID">
+    <toolspecific tool="Yasper" version="1.2.4020.34351">
+      <roles xmlns="http://www.yasper.org/specs/epnml-1.1/toolspec" />
+    </toolspecific>
+    <place id="CENTER_PLACE_t1">
+      <name>
+        <text>t1</text>
+      </name>
+      <graphics>
+        <position x="299" y="333" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </place>
+    <place id="p4">
+      <name>
+        <text>p4</text>
+      </name>
+      <graphics>
+        <position x="577" y="484" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </place>
+    <place id="p3">
+      <name>
+        <text>p3</text>
+      </name>
+      <graphics>
+        <position x="554" y="191" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </place>
+    <place id="p2">
+      <name>
+        <text>p2</text>
+      </name>
+      <graphics>
+        <position x="65" y="477" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </place>
+    <place id="p1">
+      <name>
+        <text>p1</text>
+      </name>
+      <graphics>
+        <position x="65" y="207" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </place>
+    <transition id="t1_op_1">
+      <name>
+        <text>t1</text>
+      </name>
+      <graphics>
+        <position x="299" y="210" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </transition>
+    <transition id="t1_op_3">
+      <name>
+        <text>t1</text>
+      </name>
+      <graphics>
+        <position x="469" y="333" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </transition>
+    <transition id="t1_op_2">
+      <name>
+        <text>t1</text>
+      </name>
+      <graphics>
+        <position x="301" y="477" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </transition>
+    <arc id="a1" source="CENTER_PLACE_t1" target="t1_op_1" />
+    <arc id="a4" source="t1_op_1" target="p4" />
+    <arc id="a7" source="t1_op_1" target="p3" />
+    <arc id="a10" source="t1_op_1" target="CENTER_PLACE_t1" />
+    <arc id="a12" source="p1" target="t1_op_1" />
+    <arc id="a13" source="t1_op_1" target="CENTER_PLACE_t1" />
+    <arc id="a14" source="p2" target="t1_op_1" />
+  </net>
+</pnml>

@@ -1,0 +1,154 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.hoodox.operon</groupId>
+	<artifactId>operon-parent</artifactId>
+	<packaging>pom</packaging>
+	<version>1.0.1</version>
+	<name>Operon Workflow Framework</name>
+	<url>http://www.hoodox.com/operon</url>
+	<ciManagement>
+		<system>continuum</system>
+		<notifiers>
+			<notifier>
+				<configuration>
+					<address>chung.hua@hoodox.com</address>
+				</configuration>
+			</notifier>
+		</notifiers>
+	</ciManagement>
+	<developers>
+		<developer>
+			<id>huac</id>
+			<name>Chung Hua</name>
+			<email>chung.hua@hoodox.com</email>
+			<organization>Hoodox</organization>
+			<organizationUrl>http://www.hoodox.com</organizationUrl>
+			<roles>
+				<role>Maintainer</role>
+				<role>Developer</role>
+			</roles>
+			<timezone>GMT</timezone>
+		</developer>
+	</developers>
+	<licenses>
+		<license>
+			<name>Hoodox Software License, Version 1.0</name>
+			<url>http://www.hoodox.com/licenses/LICENSE-1.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<properties>
+		<!-- build plugins -->
+		<wagon-ssh.version>2.5</wagon-ssh.version>
+		<maven-surefire-plugin.version>2.4.3</maven-surefire-plugin.version>		
+	</properties>
+	
+	<dependencies>		
+	</dependencies>
+	<build>
+		<plugins>
+			<!-- Don't forget Java 5!! for annotations -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>${wagon-ssh.version}</version>
+			</extension>
+		</extensions>
+		
+	</build>
+	<!--
+	************************************
+	* Enabling FTP
+	************************************
+	-->	
+	<distributionManagement>
+		<repository>
+			<id>ssh-hoodox-repository</id>
+			<url>
+				scp://mavenrepo.hoodox.com:/home/mavenrepo/html/repo/
+			</url>
+		</repository>
+	</distributionManagement>
+		
+	<!--
+	************************************
+	* Registering other repositories
+	************************************
+	-->
+	<repositories>
+		<repository>
+			<id>Maven Snapshots</id>
+			<url>http://snapshots.maven.codehaus.org/maven2/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+
+		<repository>
+			<id>apache.org</id>
+			<name>Maven Snapshots</name>
+			<url>
+				http://people.apache.org/repo/m2-snapshot-repository
+			</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+		
+		<repository>
+			<id>default1</id>
+			<name>The default repository</name>
+			<url>http://repo1.maven.org/maven2</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		
+		<repository>
+			<id>default2</id>
+			<name>The default repository</name>
+			<url>http://www.ibiblio.org/maven2</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>maven rsync</id>
+			<name>Repository that has latest Ibatis</name>
+			<url>http://people.apache.org/repo/m2-ibiblio-rsync-repository</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+
+		
+		<repository>
+			<id>hoodox-repository</id>
+			<name>The hoodox repository</name>
+			<url>http://mavenrepo.hoodox.com/repo/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	
+</project>

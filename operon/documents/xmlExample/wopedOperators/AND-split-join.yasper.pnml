@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<pnml>
+  <net type="http://www.yasper.org/specs/epnml-1.1" id="noID">
+    <toolspecific tool="Yasper" version="1.2.4020.34351">
+      <roles xmlns="http://www.yasper.org/specs/epnml-1.1/toolspec" />
+    </toolspecific>
+    <place id="p4">
+      <name>
+        <text>p4</text>
+      </name>
+      <graphics>
+        <position x="517" y="56" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </place>
+    <place id="p3">
+      <name>
+        <text>p3</text>
+      </name>
+      <graphics>
+        <position x="536" y="287" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </place>
+    <place id="p2">
+      <name>
+        <text>p2</text>
+      </name>
+      <graphics>
+        <position x="119" y="292" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </place>
+    <place id="p1">
+      <name>
+        <text>p1</text>
+      </name>
+      <graphics>
+        <position x="118" y="80" />
+        <dimension x="40" y="40" />
+      </graphics>
+      <initialMarking>
+        <text>1</text>
+      </initialMarking>
+    </place>
+    <transition id="t1_op_1">
+      <name>
+        <text>t1</text>
+      </name>
+      <graphics>
+        <position x="330" y="166" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </transition>
+    <arc id="a2" source="p1" target="t1_op_1" />
+    <arc id="a4" source="p2" target="t1_op_1" />
+    <arc id="a6" source="t1_op_1" target="p4" />
+    <arc id="a8" source="t1_op_1" target="p3" />
+  </net>
+</pnml>

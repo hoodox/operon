@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!--
+		Created with Liquid XML Studio 1.0.7.0
+		(http://www.liquid-technologies.com)
+	-->
+<xsd:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified"
+	elementFormDefault="qualified">
+	
+	<xs:include schemaLocation="../xsd/pnml-common.xsd" />
+
+	<xs:annotation>
+		<xs:documentation>
+			Chung Hua
+			All the woped common types and operon types
+			are merged here to form
+			toolspecific merges has been moved
+			into here.
+
+			This has been modified to
+			combine both Operon and Woped schemas.
+
+			24th
+			January 2011
+
+		</xs:documentation>
+	</xs:annotation>
+	
+	<xs:group name="netToolspecificOperonGroup">
+		<xs:sequence>
+			<xs:element name="resourceManagerInterface" type="xs:string"/>
+			<xs:choice minOccurs="0">
+				<xs:element name="explicitTimeToLive" type="operonTimeDurationExplicitType"/>
+				<xs:element name="implicitTimeToLive" type="operonTimeDurationImplicitType"/>
+			</xs:choice>
+			<xs:element name="schedulerRegistry" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="scheduler" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:annotation>
+									<xs:documentation xml:lang="en">
+											The Scheduler is globally shared this means that the scheduler can be used by other net with the same id.
+											Note: If two or more nets have the same scheduler id the first one to load will be used.
+										 </xs:documentation>
+								</xs:annotation>
+								<xs:sequence>
+									<xs:element name="cronTriggerExpression" type="xs:string"/>
+									<xs:element name="description" type="xs:string" minOccurs="0"/>
+								</xs:sequence>
+								<xs:attribute name="id" type="xs:ID" use="required"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>	
+	<xs:complexType name="operonTimeDurationExplicitType">
+		<xs:complexContent>
+			<xs:extension base="operonTimeDurationType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="operonTimeDurationImplicitType">
+		<xs:complexContent>
+			<xs:extension base="operonTimeDurationType">
+				<xs:sequence>
+					<xs:element name="schedulerToUse" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:attribute name="ref" type="xs:IDREF" use="required"/>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="operonTimeDurationType">
+		<xs:sequence>
+			<xs:element name="duration">
+				<xs:annotation>
+					<xs:documentation>
+						duration pattern is days-hours-minutes-seconds e.g. 2-30-100-99 which
+						means the duration is 2 days + 30 hours + 20 minutes + 99 seconds = (2*24*60*60) + (30*60*60) + 99 = 280899 secs
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="([0-9])*-([0-9])*-([0-9])*-([0-9])*"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:group name="placeToolspecificOperonGroup">
+		<xsd:sequence>
+			<xsd:choice>
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+					=============================== 
+					Places
+					type: source, intermediate, sink, inref (subnet)
+					and outref (subnet)
+					Default is intermediate which does not require an associated element
+					===============================
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:choice>
+					<xsd:element name="sourcePlace" type="operonPlaceTypeSourceType"/>
+					<xsd:element name="sinkPlace" type="xsd:string" fixed="true"/>
+				</xsd:choice>
+			</xsd:choice>
+		</xsd:sequence>
+	</xs:group>
+	<xs:complexType name="operonPlaceTypeSourceType">
+		<xs:sequence>
+			<xs:element name="postCreateCaseAction" type="xs:string"/>
+			<xs:element name="resources" type="operonResourcesType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="operonResourcesType">
+		<xs:sequence>
+			<xs:element name="defaultId" type="xs:string"/>
+			<xs:element name="resourceId" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+
+	<xs:group name="referencePlaceToolspecificOperonGroup">
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="inrefPlace" type="operonPlaceTypeInrefType"/>
+				<xs:element name="outrefPlace" type="xs:string" fixed="true"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:group>
+	<xs:complexType name="operonPlaceTypeInrefType">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>
+							Create Cases Action allows us to create multiple subcases in one go.
+							For example the execution of the parent case may result with N subcases.
+							The subcases action class allows us to link database entities with the subcases.
+						</xs:documentation>
+			</xs:annotation>
+			<xs:element name="createSubcasesAction" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+
+	<xs:group name="arcToolspecificOperonGroup">
+		<xs:sequence>
+			<xs:element name="guardExpression" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+
+
+	
+	<xs:group name="transitionToolspecificOperonGroup">
+		<xs:sequence>
+			<xs:element name="transitionType">
+				<xs:complexType>
+					<xs:annotation>
+						<xs:documentation xml:lang="en">
+					===============================
+					There are 5 different Transition types:
+					1. normal - ordinary sequential flow
+					2. AND-split AND split
+					3. XOR-split Explicit OR split
+					4. AND-join AND join
+					5. XOR-join Explicit OR join
+					===============================
+					</xs:documentation>
+					</xs:annotation>
+					<xs:attribute name="type" use="required">
+						<xs:simpleType>
+							<xs:restriction base="xs:NMTOKEN">
+								<xs:enumeration value="normal"/>
+								<xs:enumeration value="AND_split"/>
+								<xs:enumeration value="OR_join"/>
+								<xs:enumeration value="XOR_split"/>
+								<xs:enumeration value="AND_join"/>
+								<xs:enumeration value="XOR_join"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+			<xs:choice>
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+					============================
+					Triggers
+					1. Four possible trigger-types manual, auto, time, message
+					    (a) AUTO - this is the default, transition is automatically triggered
+					    	   once the transition is in READY state. Transition will FINISH
+					    	   when all the actions of the Transition tasks has FINISHED.
+			
+					    (b) MANUAL - each status after READY has to be triggered
+					         externally, i.e. an external trigger is required to START
+					         the transition and an external trigger lto et the Petrinet
+					         know that the transition has FINISHED.
+			
+					   (c) TIME - An enabled task instance is triggered by a clock,
+					         i.e., the task is executed at a predefined time. For example,
+					         the task 'remove document' is triggered if a case is trapped
+					         in a specific state for more than 15 hours.
+			
+					         Once startedTransition will FINISH when
+					         all the actions of the Transition tasks has FINISHED.
+			
+					   (d) MESSAGE - An external event (i.e. a message) triggers an
+					        enabled task instance. Examples of messages are
+					        telephone-calls, fax messages, e-mails or EDI messages.
+					        Each of these external events will probably require some
+					        action within an application task so that the workflow system
+					        is made aware that the event has taken place.Once this
+					        triggers is pulled the transition will execute and end automatically.
+					============================
+					</xs:documentation>
+				</xs:annotation>
+				<xs:element name="autoTrigger" type="operonTriggerAutoType"/>
+				<xs:element name="timeTrigger" type="operonTriggerTimeType"/>
+				<xs:element name="manualTrigger" type="operonTriggerWithResourcesType"/>
+				<xs:element name="messageTrigger" type="operonTriggerWithResourcesType"/>
+			</xs:choice>
+			<xs:element name="task">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="priorityWeighting" type="xs:integer" minOccurs="1" maxOccurs="1" default="1"/>							
+						<xs:element name="estimatedCompletionTime" type="operonTimeDurationType" minOccurs="1" maxOccurs="1"/>							
+						<xs:element name="action" type="xs:string" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:complexType name="operonTriggerWithResourcesType">
+		<xs:sequence>
+			<xs:element name="resources" type="operonResourcesType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="operonTriggerAutoType">
+		<xs:sequence>
+			<xs:element name="executionTimeLimit" type="operonTimeDurationType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="operonTriggerTimeType">
+		<xs:sequence>
+			<xs:element name="executionTimeLimit" type="operonTimeDurationType"/>
+			<xs:choice>
+				<xs:element name="implicitTriggerDelayDuration" type="operonTimeDurationImplicitType"/>
+				<xs:element name="explicitTriggerDelayDuration" type="operonTimeDurationExplicitType"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+
+
+</xsd:schema>

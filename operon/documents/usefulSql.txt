@@ -1,0 +1,42 @@
+/*		
+
+UPDATE operon_workitem 
+			SET WORKITEM_STATUS='in_progress',
+					IN_PROGRESS_TIMEOUT_DATE='2006-05-05 18:30:00'
+            WHERE WORKITEM_ID=2;
+
+UPDATE operon_workitem 
+			SET WORKITEM_STATUS='in_progress'
+      WHERE WORKITEM_ID=1;
+						
+		UPDATE operon_token 
+			SET operon_token.TOKEN_STATUS='free'
+    WHERE operon_token.TOKEN_ID in (1,2); 
+
+
+		UPDATE operon_case 
+			SET operon_case.CASE_STATUS='open'
+    WHERE operon_case.CASE_ID =1; 
+		
+UPDATE operon_ttl_scheduler 
+			SET operon_ttl_scheduler.CRON_EXP='0 0/6 * * * ?'
+    WHERE operon_ttl_scheduler.CASE_ID =1;
+		
+		
+*/
+
+
+/* 'YYYY-MM-DD HH:MM:SS' */
+
+/*
+delete from config_repository;
+delete from operon_ttl_scheduler;
+delete from operon_event_audit;
+delete from operon_time_trigger_scheduler;
+delete from operon_token_enabled_task;
+delete from operon_token_place_ref;
+delete from operon_token;
+delete from operon_task;
+delete from operon_case where operon_case.PARENT_CASE_ID is not null;
+delete from operon_case;
+*/

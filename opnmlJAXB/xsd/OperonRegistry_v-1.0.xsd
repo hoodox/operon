@@ -1,0 +1,14 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xsd:complexType name="netFilesType">
+		<xsd:sequence>
+			<xsd:element name="filename" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="operonRegistry">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="netFiles" type="netFilesType" minOccurs="1" maxOccurs="1"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

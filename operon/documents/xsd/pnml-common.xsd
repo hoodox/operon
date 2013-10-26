@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!--
+		Created with Liquid XML Studio 1.0.7.0
+		(http://www.liquid-technologies.com)
+	-->
+<xsd:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified"
+	elementFormDefault="qualified">
+
+	<xs:annotation>
+		<xs:documentation>
+			Chung Hua
+			All the pnml common types related have been
+			moved
+			into here.
+
+			This has been modified to combine both Operon and
+			Woped schemas.
+			This schema has all common types of pnml
+			file.
+
+			24th
+			January 2011 
+ 		     	
+ 		</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="toolspecificType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Type for the Inheritance of the Toolspecific
+				Types</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="tool" type="xs:string" use="required" />
+		<xs:attribute name="version" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="nodeType">
+		<xs:annotation>
+			<xs:documentation> General Node Types </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="name" type="nodeNameType" />
+			<xs:element name="graphics" type="graphicsNodeType" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="nodeNameType">
+		<xs:annotation>
+			<xs:documentation>Extension see
+				"http://www.informatik.hu-berlin.de/top/pnml/conv.rng"
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="text" type="xs:string" />
+			<xs:element minOccurs="0" name="graphics" type="annotationGraphisType" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="graphicsNodeType">
+		<xs:sequence>
+			<xs:element name="position" type="positionType" />
+			<xs:element minOccurs="0" name="dimension" type="dimensionType" />
+			<xs:element minOccurs="0" ref="fill" />
+			<xs:element minOccurs="0" ref="line" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="annotationGraphisType">
+		<xs:annotation>
+			<xs:documentation>Extension see
+				"http://www.informatik.hu-berlin.de/top/pntd/ptNetb"
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="offset" type="positionType" />
+			<xs:element minOccurs="0" ref="fill" />
+			<xs:element minOccurs="0" ref="line" />
+			<xs:element minOccurs="0" ref="font" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="fill">
+		<xs:annotation>
+			<xs:documentation> Helper Types / Elements</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="color" />
+			<xs:attribute name="gradient-color" />
+			<xs:attribute name="gradient-rotation" type="xs:token" />
+			<xs:attribute name="images" type="xs:anyURI" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="line">
+		<xs:complexType>
+			<xs:attribute name="shape" type="xs:token" />
+			<xs:attribute name="color" />
+			<xs:attribute name="width" type="xs:decimal" />
+			<xs:attribute name="style" type="xs:token" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="font">
+		<xs:complexType>
+			<xs:attribute name="family" />
+			<xs:attribute name="style" />
+			<xs:attribute name="weight" />
+			<xs:attribute name="size" />
+			<xs:attribute name="decoration">
+				<xs:simpleType>
+					<xs:restriction base="xs:token">
+						<xs:enumeration value="underline" />
+						<xs:enumeration value="overline" />
+						<xs:enumeration value="line-through" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="align">
+				<xs:simpleType>
+					<xs:restriction base="xs:token">
+						<xs:enumeration value="left" />
+						<xs:enumeration value="center" />
+						<xs:enumeration value="right" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="rotation" type="xs:decimal" />
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="dimensionType">
+		<xs:attribute name="x" type="xs:decimal" use="required" />
+		<xs:attribute name="y" type="xs:decimal" use="required" />
+	</xs:complexType>
+	<xs:complexType name="positionType">
+		<xs:attribute name="x" type="xs:decimal" use="required" />
+		<xs:attribute name="y" type="xs:decimal" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="arcNameType">
+		<xs:annotation>
+			<xs:documentation>Extension see
+				"http://www.informatik.hu-berlin.de/top/pnml/conv.rng"
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="text" type="xs:int" />
+			<xs:element minOccurs="0" name="graphics" type="annotationGraphisType" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="graphicsArcType">
+		<xs:sequence>
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="position"
+				type="positionType" />
+			<xs:element minOccurs="0" ref="line" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="arcInscriptionType">
+		<xs:annotation>
+			<xs:documentation>Extension see
+				"http://www.informatik.hu-berlin.de/top/pntd/ptNetb"
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="text" type="xs:string" />
+			<xs:element name="graphics" type="annotationGraphisType" />
+		</xs:sequence>
+	</xs:complexType>
+
+</xsd:schema>

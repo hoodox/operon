@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="operon" verbose="5">
+	<test name="operon">
+		<classes>
+			<class
+				name="com.hoodox.operon.helper.jaxb.OpnmlJaxHelperTest">
+			</class>
+			<class
+				name="com.hoodox.operon.wfnet.CaseTypeManagerTest">
+			</class>
+			<class
+				name="com.hoodox.operon.workflow.WorkflowEngineTest">
+			</class>
+		</classes>
+	</test>
+</suite>

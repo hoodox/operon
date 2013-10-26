@@ -1,0 +1,364 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="1.0">
+	<xsd:include schemaLocation="../xsd/pnml-v1.0.xsd"/>	
+	<xsd:annotation>
+		<xsd:documentation xml:lang="en">
+			=======================
+			Operon Implementations of the toolspecificTypes
+			(netToolspecificType,
+			placeToolspecificType,
+			referencePlaceToolspecificType,
+			arcToolspecificType,
+			transitionToolspecificType)
+			=======================
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:complexType name="operonToolspecificType">
+		<xsd:complexContent>
+			<xsd:extension base="netToolspecificType">
+				<xsd:attribute name="tool" type="xsd:string" use="required"
+					fixed="Operon" />
+				<xsd:attribute name="version" type="xsd:decimal" use="required"
+					fixed="1.0" />
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="toolspecific" substitutionGroup="netToolspecificGroup" type="operonNetToolspecificType"/>
+	<xsd:complexType name="operonNetToolspecificType">
+		<xsd:complexContent>
+			<xsd:extension base="operonToolspecificType">
+				<xsd:sequence>
+					<xsd:element name="resourceManagerInterface" type="xsd:string" />
+					<xsd:choice minOccurs="0">
+						<xsd:element name="explicitTimeToLive" type="operonTimeDurationExplicitType" />
+						<xsd:element name="implicitTimeToLive" type="operonTimeDurationImplicitType" />
+					</xsd:choice>
+					<xsd:element name="schedulerRegistry" minOccurs="0">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="scheduler" maxOccurs="unbounded">
+									<xsd:complexType>
+										<xsd:annotation>
+											<xsd:documentation xml:lang="en">
+												The Scheduler
+												is globally shared this means that the scheduler
+												can be used
+												by other net with the same id.
+												Note: If two or more nets have
+												the same scheduler id the first
+												one to load will be used.
+											</xsd:documentation>
+										</xsd:annotation>
+										<xsd:sequence>
+											<xsd:element name="cronTriggerExpression" type="xsd:string" />
+											<xsd:element name="description" type="xsd:string"
+												minOccurs="0" />
+										</xsd:sequence>
+										<xsd:attribute name="id" type="xsd:ID" use="required" />
+									</xsd:complexType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="operonTimeDurationExplicitType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Explicit means that the Trigger will not fire
+				right away once the time is due.
+			</xsd:documentation>
+		</xsd:annotation>	
+		<xsd:complexContent>
+			<xsd:extension base="operonTimeDurationType" />
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="operonTimeDurationImplicitType">
+		<xsd:complexContent>
+			<xsd:extension base="operonTimeDurationType">
+				<xsd:sequence>
+					<xsd:element name="schedulerToUse" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:documentation>
+								Implicit means that the Trigger will not fire
+								right away.
+								It just means that the state is ready to be fired and
+								is fired
+								by the Scheduler in reference. The scheduler in
+								reference. The scheduler
+								in reference will fire in the next due
+								interval.
+							</xsd:documentation>
+						</xsd:annotation>
+						<xsd:complexType>
+							<xsd:attribute name="ref" type="xsd:IDREF" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="operonTimeDurationType">
+		<xsd:sequence>
+			<xsd:element name="duration">
+				<xsd:annotation>
+					<xsd:documentation>
+						duration pattern is days-hours-minutes-seconds
+						e.g. 2-30-100-99 which
+						means the duration is 2 days + 30 hours + 20
+						minutes + 99 seconds = (2*24*60*60) + (30*60*60) + 99 = 280899
+						secs
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:pattern value="([0-9])*-([0-9])*-([0-9])*-([0-9])*" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="toolspecific" substitutionGroup="placeToolspecificGroup" type="operonPlaceToolspecificType"/>	
+	<xsd:complexType name="operonPlaceToolspecificType">
+		<xsd:complexContent>
+			<xsd:extension base="operonToolspecificType">
+				<xsd:sequence>
+					<xsd:choice>
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								===============================
+								Places
+								type: source, intermediate,
+								sink, inref (subnet)
+								and outref (subnet)
+								Default is intermediate
+								which does not require an associated element
+								===============================
+							</xsd:documentation>
+						</xsd:annotation>
+						<xsd:choice>
+							<xsd:element name="sourcePlace" type="operonPlaceTypeSourceType" />
+							<xsd:element name="sinkPlace" type="xsd:string"
+								fixed="true" />
+						</xsd:choice>
+					</xsd:choice>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="operonPlaceTypeSourceType">
+		<xsd:sequence>
+			<xsd:element name="postCreateCaseAction" type="xsd:string" />
+			<xsd:element name="resources" type="operonResourcesType" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="operonResourcesType">
+		<xsd:sequence>
+			<xsd:element name="defaultId" type="xsd:IDREF"/>
+			<xsd:element name="resourceId" type="xsd:IDREF" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>	
+	<xsd:complexType name="referencePlaceToolspecificType">
+		<xsd:complexContent>
+			<xsd:extension base="operonReferencePlaceToolspecificType" />
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="operonReferencePlaceToolspecificType">
+		<xsd:complexContent>
+			<xsd:extension base="operonToolspecificType">
+				<xsd:sequence>
+					<xsd:choice>
+						<xsd:element name="inrefPlace" type="operonPlaceTypeInrefType" />
+						<xsd:element name="outrefPlace" type="xsd:string"
+							fixed="true" />
+					</xsd:choice>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="operonPlaceTypeInrefType">
+		<xsd:sequence>
+			<xsd:annotation>
+				<xsd:documentation>
+					Create Cases Action allows us to create multiple
+					subcases in one go.
+					For example the execution of the parent case may
+					result with N
+					subcases.
+					The subcases action class allows us to link
+					database entities with the
+					subcases.
+						</xsd:documentation>
+			</xsd:annotation>
+			<xsd:element name="createSubcasesAction" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="arcToolspecificType">
+		<xsd:complexContent>
+			<xsd:extension base="operonArcToolspecificType" />
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="operonArcToolspecificType">
+		<xsd:complexContent>
+			<xsd:extension base="operonToolspecificType">
+				<xsd:sequence>
+					<xsd:element name="arcType">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="guardExpression" type="xsd:string"
+									minOccurs="0" />
+							</xsd:sequence>
+							<xsd:attribute name="direction" use="required">
+								<xsd:simpleType>
+									<xsd:restriction base="xsd:NMTOKEN">
+										<xsd:enumeration value="in" />
+										<xsd:enumeration value="out" />
+									</xsd:restriction>
+								</xsd:simpleType>
+							</xsd:attribute>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="transitionToolspecificType">
+		<xsd:complexContent>
+			<xsd:extension base="operonTransitionToolspecificType" />
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="operonTransitionToolspecificType">
+		<xsd:complexContent>
+			<xsd:extension base="operonToolspecificType">
+				<xsd:sequence>
+					<xsd:element name="transitionType">
+						<xsd:complexType>
+							<xsd:annotation>
+								<xsd:documentation xml:lang="en">
+									===============================
+									There are 5 different Transition
+									types:
+									1. normal - ordinary sequential flow
+									2. AND-split AND
+									split
+									3. XOR-split Explicit OR split
+									4. AND-join AND join
+									5.
+									XOR-join Explicit OR join
+									===============================
+								</xsd:documentation>
+							</xsd:annotation>
+							<xsd:attribute name="type" use="required">
+								<xsd:simpleType>
+									<xsd:restriction base="xsd:NMTOKEN">
+										<xsd:enumeration value="normal" />
+										<xsd:enumeration value="AND_split" />
+										<xsd:enumeration value="XOR_split" />
+										<xsd:enumeration value="AND_join" />
+										<xsd:enumeration value="XOR_join" />
+									</xsd:restriction>
+								</xsd:simpleType>
+							</xsd:attribute>
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:choice>
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								============================
+								Triggers
+								1. Four possible
+								trigger-types manual, auto, time, message
+								(a) AUTO - this is the
+								default, transition is automatically
+								triggered
+								once the transition
+								is in READY state. Transition will FINISH
+								when all the actions of
+								the Transition tasks has FINISHED.
+
+								(b) MANUAL - each status after
+								READY has to be triggered
+								externally, i.e. an external trigger is
+								required to START
+								the transition and an external trigger lto et
+								the Petrinet
+								know that the transition has FINISHED.
+
+								(c) TIME - An
+								enabled task instance is triggered by a clock,
+								i.e., the task is
+								executed at a predefined time. For example,
+								the task 'remove
+								document' is triggered if a case is trapped
+								in a specific state
+								for more than 15 hours.
+
+								Once startedTransition will FINISH when
+								all the actions of the Transition tasks has FINISHED.
+
+								(d) MESSAGE
+								- An external event (i.e. a message) triggers an
+								enabled task
+								instance. Examples of messages are
+								telephone-calls, fax messages,
+								e-mails or EDI messages.
+								Each of these external events will
+								probably require some
+								action within an application task so that
+								the workflow system
+								is made aware that the event has taken
+								place.Once this
+								trggers is pulled the transition will execute and
+								end automatically.
+								============================
+							</xsd:documentation>
+						</xsd:annotation>
+						<xsd:element name="autoTrigger" type="operonTriggerAutoType" />
+						<xsd:element name="timeTrigger" type="operonTriggerTimeType" />
+						<xsd:element name="manualTrigger" type="operonTriggerWithResourcesType" />
+						<xsd:element name="messageTrigger" type="operonTriggerWithResourcesType" />
+					</xsd:choice>
+					<xsd:element name="task">
+						<xsd:annotation>
+							<xsd:documentation>
+								The higer the priorityWeighting number means
+								the higher the
+								priority 
+							</xsd:documentation>
+						</xsd:annotation>
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="priorityWeighting" type="xsd:integer"
+									minOccurs="1" maxOccurs="1" default="1" />
+								<xsd:element name="estimatedCompletionTime" type="operonTimeDurationType"
+									minOccurs="1" maxOccurs="1" />
+								<xsd:element name="action" type="xsd:string"
+									maxOccurs="unbounded" />
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="operonTriggerWithResourcesType">
+		<xsd:sequence>
+			<xsd:element name="resources" type="operonResourcesType" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="operonTriggerAutoType">
+		<xsd:sequence>
+			<xsd:element name="executionTimeLimit" type="operonTimeDurationType" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="operonTriggerTimeType">
+		<xsd:sequence>
+			<xsd:element name="executionTimeLimit" type="operonTimeDurationType" />
+			<xsd:choice>
+				<xsd:element name="implicitTriggerDelayDuration" type="operonTimeDurationImplicitType" />
+				<xsd:element name="explicitTriggerDelayDuration" type="operonTimeDurationExplicitType" />
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

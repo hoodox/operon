@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+  - Application context definition for Repositree business layer.
+	- Contains bean references to the transaction manager and to the DAOs in
+	- dataAccessContext-local/jta.xml (see web.xml's "contextConfigLocation").
+	-->
+<beans>
+
+	<!-- ========================= GENERAL DEFINITIONS ========================= -->
+
+	
+	<!-- ========================= BUSINESS OBJECT DEFINITIONS ======================== -->
+	<bean id="tranactionProxyAware" abstract="true">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="transactionAttributeSource">
+			<bean
+				class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+		</property>
+	</bean>
+	
+	<bean id="auditTarget" singleton="true" class="com.hoodox.operon.workflow.AuditImpl"/>
+	<bean id="audit"
+        class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+        parent="tranactionProxyAware">
+        <property name="target"><ref local="auditTarget"/></property>
+    </bean>
+	
+	
+	<bean id="workflowCoreEngineTarget" singleton="true" class="com.hoodox.operon.workflow.WorkflowCoreEngineImpl">
+		<property name="retryActivityMaxCount" value="3"/>
+		<property name="retryActivityCronInterval" value="0 0/5 * * * ?"/>				
+		<constructor-arg type="java.lang.String" value="OperonRegistery.xml"/>
+		<constructor-arg  ref="configurationHelper"/>
+		<constructor-arg  ref="caseDao"/>
+	</bean>
+
+	<bean id="workflowCoreEngine"
+        class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+        parent="tranactionProxyAware">
+        <property name="target"><ref local="workflowCoreEngineTarget"/></property>
+    </bean>
+		
+	<bean id="configurationHelper" singleton="true" class="com.hoodox.commons.configurable.ConfigurationHelper">
+		<!--
+		<property name="configRootDir"><value></value></property>
+		-->	
+		<property name="applicationName" value="tailorit"/>
+		<property name="dataSource" ref="dataSource"/>
+		<property name="defaultServerId" value="default"/>
+		
+		<!-- if we are using database make sure values are in the database -->
+		<property name="useDatabase" value="true"/>
+	</bean>
+	
+	<!--
+	  -  The main class provides an entry point into the Operon Workflow engine
+	-->
+	<bean id="workflowEngine" singleton="true" class="com.hoodox.operon.workflow.WorkflowEngineImpl"/>
+	
+	<!-- ========================= REMOTE EXPORTER DEFINITIONS ======================== -->
+
+
+</beans>

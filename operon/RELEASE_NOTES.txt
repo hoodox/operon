@@ -1,0 +1,26 @@
+====================================
+operon v1.0.1
+====================================
+
+* New Supported Workflow Pattern *
+Advanced Control Flow Patterns   
+a) Multiple choice (OR-Split)
+b) Multi-Merge (used to support mulitple choice)  
+
+====================================
+operon v1.0.0
+====================================
+
+* Supported Workflow Pattern *
+Basic Control Flow Patterns
+a) Sequence
+b) Parallel Split (AND-split)
+c) Synchronization (AND-join)
+d) Exclusive Choice (XOR-split)
+e) Simple Merge (XOR-join)
+
+Advanced Control Flow Patterns   
+a) Cancel Case
+
+* Not supported advance patterns *
+a) Structured Synchronizing Merge - used to support mulitple choice (TODO)

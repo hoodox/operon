@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<pnml>
+  <net type="http://www.yasper.org/specs/epnml-1.1" id="noID">
+    <toolspecific tool="Yasper" version="1.2.4020.34351">
+      <roles xmlns="http://www.yasper.org/specs/epnml-1.1/toolspec" />
+    </toolspecific>
+    <place id="CENTER_PLACE_t1">
+      <name>
+        <text>t1</text>
+      </name>
+      <graphics>
+        <position x="360" y="216" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </place>
+    <place id="p4">
+      <name>
+        <text>p4</text>
+      </name>
+      <graphics>
+        <position x="632" y="325" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </place>
+    <place id="p3">
+      <name>
+        <text>p3</text>
+      </name>
+      <graphics>
+        <position x="628" y="124" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </place>
+    <place id="p2">
+      <name>
+        <text>p2</text>
+      </name>
+      <graphics>
+        <position x="83" y="119" />
+        <dimension x="40" y="40" />
+      </graphics>
+      <initialMarking>
+        <text>1</text>
+      </initialMarking>
+    </place>
+    <place id="p1">
+      <name>
+        <text>p1</text>
+      </name>
+      <graphics>
+        <position x="84" y="322" />
+        <dimension x="40" y="40" />
+      </graphics>
+      <initialMarking>
+        <text>1</text>
+      </initialMarking>
+    </place>
+    <transition id="t1_op_1">
+      <name>
+        <text>t1</text>
+      </name>
+      <graphics>
+        <position x="479" y="122" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </transition>
+    <transition id="t1_op_3">
+      <name>
+        <text>t1</text>
+      </name>
+      <graphics>
+        <position x="222" y="322" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </transition>
+    <transition id="t1_op_2">
+      <name>
+        <text>t1</text>
+      </name>
+      <graphics>
+        <position x="494" y="325" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </transition>
+    <transition id="t1_op_4">
+      <name>
+        <text>t1</text>
+      </name>
+      <graphics>
+        <position x="225" y="121" />
+        <dimension x="40" y="40" />
+      </graphics>
+    </transition>
+    <arc id="a2" source="t1_op_3" target="CENTER_PLACE_t1" />
+    <arc id="a4" source="p1" target="t1_op_3" />
+    <arc id="a5" source="CENTER_PLACE_t1" target="t1_op_2" />
+    <arc id="a7" source="t1_op_2" target="p4" />
+    <arc id="a9" source="CENTER_PLACE_t1" target="t1_op_1" />
+    <arc id="a10" source="t1_op_1" target="p3" />
+    <arc id="a11" source="t1_op_4" target="CENTER_PLACE_t1" />
+    <arc id="a13" source="p2" target="t1_op_4" />
+  </net>
+</pnml>

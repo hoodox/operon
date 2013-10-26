@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<operonRegistry xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="C:\chungWorkspaces\hoodoxWorkspace\Operon\documents\xsd\operon-registry_v1.0.xsd">
+	<netFiles>
+		<filename>ExampleNetNonWopedFormat.xml</filename>
+	</netFiles>
+</operonRegistry>

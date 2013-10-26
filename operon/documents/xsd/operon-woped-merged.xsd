@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!--
+		Created with Liquid XML Studio 1.0.7.0
+		(http://www.liquid-technologies.com)
+	-->
+<xsd:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified"
+	elementFormDefault="qualified">
+	
+	
+	<xs:import schemaLocation="http://www.w3.org/2001/xml.xsd"
+		namespace="http://www.w3.org/XML/1998/namespace" />
+	<xs:include schemaLocation="../xsd/pnml-common.xsd" />
+	<xs:include schemaLocation="../xsd/woped-common.xsd" />
+	<xs:include schemaLocation="../xsd/operon-common.xsd" />
+
+	<xs:annotation>
+		<xs:documentation>
+			Chung Hua
+			All the woped common types and operon types
+			are merged here to form
+			toolspecific merges has been moved
+			into here.
+
+			This has been modified to
+			combine both Operon and Woped schemas.
+
+			We need to implement:			
+			netToolspecificMergeType, placeToolspecificMergeType
+			referencePlaceToolspecificMergeType, transitionToolspecificMergeType,
+			arcToolspecificMergeType
+			
+			24th
+			January 2011
+
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="netToolspecificMergeType">
+		<xs:complexContent mixed="false">
+			<xs:extension base="toolspecificType">
+				<xs:choice minOccurs="0" maxOccurs="1">
+					<xs:group ref="netToolspecificWopedGroup"/>
+					<xs:group ref="netToolspecificOperonGroup"/>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:group name="netToolspecificWopedGroup">
+		<xs:sequence>
+			<xs:element minOccurs="0" name="bounds" type="graphicsSimpleType" />
+			<xs:element minOccurs="0" name="treeWidth" type="xs:int" />
+			<xs:element minOccurs="0" name="verticalLayout" type="xs:boolean" />
+			<xs:element minOccurs="0" name="resources" type="resourcesType" />
+			<xs:element minOccurs="0" name="simulations" type="simulationsType" />
+			<xs:element minOccurs="0" ref="partnerLinks" />
+			<xs:element minOccurs="0" ref="variables" />
+		</xs:sequence>
+	</xs:group>
+
+
+	<xs:complexType name="placeToolspecificMergeType">
+		<xs:complexContent mixed="false">
+			<xs:extension base="toolspecificType">
+				<xs:choice minOccurs="0" maxOccurs="1">
+					<xs:group ref="placeToolspecificWopedGroup"/>
+					<xs:group ref="placeToolspecificOperonGroup"/>
+					<xs:group ref="referencePlaceToolspecificOperonGroup"/>					
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:group name="placeToolspecificWopedGroup">
+		<xs:sequence>
+			<xs:element name="operator" type="operatorType" />
+		</xs:sequence>
+	</xs:group>
+
+	<xs:complexType name="referencePlaceToolspecificMergeType">
+		<xs:complexContent mixed="false">
+			<xs:extension base="toolspecificType">
+				<xs:choice minOccurs="0" maxOccurs="1">
+					<xs:group ref="referencePlaceToolspecificOperonGroup"/>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>	
+
+
+
+	<xs:complexType name="arcToolspecificMergeType">
+		<xs:complexContent mixed="false">
+			<xs:extension base="toolspecificType">
+				<xs:choice minOccurs="0" maxOccurs="1">
+					<xs:group ref="arcToolspecificWopedGroup"/>
+					<xs:group ref="arcToolspecificOperonGroup"/>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:group name="arcToolspecificWopedGroup">
+		<xs:sequence>
+			<xs:element minOccurs="0" name="route" type="xs:boolean" />
+			<xs:element minOccurs="0" name="probability" type="xs:double" />
+			<xs:element minOccurs="0" name="displayProbabilityOn"
+				type="xs:boolean" />
+			<xs:element minOccurs="0" name="displayProbabilityPosition"
+				type="positionType" />
+		</xs:sequence>
+	</xs:group>
+
+	<xs:complexType name="transitionToolspecificMergeType">
+		<xs:complexContent mixed="false">
+			<xs:extension base="toolspecificType">
+				<xs:choice minOccurs="0" maxOccurs="1">
+					<xs:group ref="transitionToolspecificWopedGroup"/>
+					<xs:group ref="transitionToolspecificOperonGroup"/>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:group name="transitionToolspecificWopedGroup">
+		<xs:sequence>
+			<xs:element minOccurs="0" name="trigger">
+				<xs:complexType>
+					<xs:complexContent mixed="false">
+						<xs:extension base="triggerType" />
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:choice minOccurs="0">
+				<xs:element name="operator" type="operatorType" />
+				<xs:element name="subprocess" type="xs:boolean" />
+			</xs:choice>
+			<xs:element minOccurs="0" name="transitionResource">
+				<xs:complexType>
+					<xs:complexContent mixed="false">
+						<xs:extension base="transitionResourceType" />
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element minOccurs="0" name="time" type="xs:int" />
+			<xs:element minOccurs="0" name="timeUnit" type="xs:int" />
+			<xs:element minOccurs="0" name="orientation" type="xs:int" />
+			<xs:choice minOccurs="0">
+				<xs:element ref="assign" />
+				<xs:element ref="invoke" />
+				<xs:element ref="reply" />
+				<xs:element ref="wait" />
+				<xs:element ref="receive" />
+				<xs:element ref="empty" />
+			</xs:choice>
+		</xs:sequence>
+	</xs:group>
+</xsd:schema>

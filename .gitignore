@@ -1,0 +1,15 @@
+#############
+# Maven
+#############
+target/
+test-output/
+
+#############
+# Java
+#############
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear

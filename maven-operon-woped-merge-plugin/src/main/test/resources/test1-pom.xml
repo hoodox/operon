@@ -1,0 +1,17 @@
+<project>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-operon-woped-merge-plugin</artifactId>
+        <configuration>
+          <sourceFile>${basedir}/src/test/resources/ExampleWoped.pnml</sourceFile>
+          <targetFile>${basedir}/src/test/resources/ExampleWoped.pnml</targetFile>
+          <generatedResourcesDirectory>${basedir}/target/test-generated-sources/operon/plugin</generatedResourcesDirectory> 
+          <outputFilename>operonWopedMerged.pnml</outputFilename>
+        </configuration>
+      </plugin>
+    </plugins>
+   </build>
+</project>
+
