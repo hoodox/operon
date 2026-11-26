@@ -573,3 +573,4 @@ still list the MySQL driver jar, are excluded on purpose and not edited: Plan 1 
   things that would have stopped Verification: the MySQL `grep` also hit the Eclipse `.classpath` files and README.txt's
   "Configuring Mysql" section (step 7 now replaces that section; the grep excludes `.classpath*` and `target`).
 - 2026-11-26 (operon): APPROVED — approved by the user ("approve the plans"). Still in `backlog/`, so nothing may be built until the loop is picked into `todos/`.
+- 2026-11-26 (operon): APPROVED — picked from `backlog/` into `todos/` with the Modernise Operon loop, on the user's go-ahead. Not started: the user is clearing the session first; the new session dispatches.

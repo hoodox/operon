@@ -832,3 +832,4 @@ None.
   2 (version number) stays open and affects only step 11. No code changed. Still in `backlog/`; not `APPROVED`.
 - 2026-11-26 (operon): PLANNED — Open question 2 resolved: the user agreed to version 2.0.0. Step 11 now sets it.
 - 2026-11-26 (operon): APPROVED — approved by the user ("approve the plans"). Still in `backlog/`, so nothing may be built until the loop is picked into `todos/`.
+- 2026-11-26 (operon): APPROVED — picked from `backlog/` into `todos/` with the Modernise Operon loop, on the user's go-ahead. Not started: the user is clearing the session first; the new session dispatches.

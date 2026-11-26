@@ -455,10 +455,10 @@ None.
   **blocked** (needs a building repo and the `db-tests` profile)
 - [Upgrade Java, libraries and Maven to latest](261125-2113-upgrade-java-libraries-and-maven-to-latest.md) — PLANNED / NEEDS
   RE-REVIEW; **blocked** (upgrades start from this baseline)
-- [Give a step that is restarted at server startup a fresh retry timer](261126-0816-reset-the-retry-timer-when-a-step-is-restarted-at-startup.md)
+- [Give a step that is restarted at server startup a fresh retry timer](backlog/261126-0816-reset-the-retry-timer-when-a-step-is-restarted-at-startup.md)
   — PLANNED, **on hold** (user rule, no feature behaviour changes, 2026-11-26); not waiting to be built. A standalone plan, not in
   the loop.
-- [Start the retry timer when the step starts](261124-1715-start-the-retry-timer-when-the-step-starts.md) — PLANNED, **on hold**
+- [Start the retry timer when the step starts](backlog/261124-1715-start-the-retry-timer-when-the-step-starts.md) — PLANNED, **on hold**
   (same user rule, 2026-11-26); not waiting to be built. A standalone plan, not in the loop.
 
 ## Status
@@ -468,7 +468,7 @@ None.
   the two bug fixes the 9 non-database tests passed. No code in the repo changed. Awaiting the user's approval.
 - 2026-11-26 (operon): PLANNED — joined the loop [Modernise Operon](261126-0754-modernise-operon-loop.md), created at the user's request.
 - 2026-11-26 (operon): PLANNED — the standalone plan
-  [261126-0816](261126-0816-reset-the-retry-timer-when-a-step-is-restarted-at-startup.md) waits on this one; added under
+  [261126-0816](backlog/261126-0816-reset-the-retry-timer-when-a-step-is-restarted-at-startup.md) waits on this one; added under
   *Blocked by this plan*. No change to this plan.
 - 2026-11-26 (operon): PLANNED / NEEDS RE-REVIEW — owning-team re-review under the user's rule "modernisation keeps every feature
   behaving as today; no bug fixes". Removed both `WopedJAXBHelper.java` changes (old Implementation step 5). Re-ran the evidence
@@ -483,3 +483,4 @@ None.
   original `hoodox-commons` jar was searched for and not found. The plan's implementation is unchanged; `testFailureIgnore` now
   stays for the whole effort. Added the on-hold 1715 under *Blocked by this plan* (it waits on this plan); 2112's tag updated.
 - 2026-11-26 (operon): APPROVED — approved by the user ("approve the plans"). Still in `backlog/`, so nothing may be built until the loop is picked into `todos/`.
+- 2026-11-26 (operon): APPROVED — picked from `backlog/` into `todos/` with the Modernise Operon loop, on the user's go-ahead. Not started: the user is clearing the session first; the new session dispatches.

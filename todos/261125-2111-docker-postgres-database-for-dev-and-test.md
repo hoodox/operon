@@ -180,3 +180,4 @@ None.
   without a terminal (as an agent runs it); host `psql` 16 is installed for the host-side check. Verification's note updated;
   2112's tag now `PLANNED`. No change to how this plan is implemented.
 - 2026-11-26 (operon): APPROVED — approved by the user ("approve the plans"). Still in `backlog/`, so nothing may be built until the loop is picked into `todos/`.
+- 2026-11-26 (operon): APPROVED — picked from `backlog/` into `todos/` with the Modernise Operon loop, on the user's go-ahead. Not started: the user is clearing the session first; the new session dispatches.

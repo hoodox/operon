@@ -490,7 +490,7 @@ sequenceDiagram
 ## Dependencies
 
 ### Blocks this plan
-- [Rebuild the missing private `hoodox-commons` jar as a module](261125-2110-rebuild-hoodox-commons-module.md) (operon) —
+- [Rebuild the missing private `hoodox-commons` jar as a module](../261125-2110-rebuild-hoodox-commons-module.md) (operon) —
   PLANNED; **blocked** until DONE: `operon/pom.xml` depends on `com.hoodox:hoodox-commons:1.0.2` (l. 31, 106-107), which is not available, so
   the repo does not build or run tests today. Writing this plan needed no build; building and verifying it does.
 

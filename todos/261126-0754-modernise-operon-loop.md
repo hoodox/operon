@@ -64,7 +64,7 @@ depends on is DONE.)
   BeanShell step no longer flips behaviour and is on hold for the user; Spring step keeps today's proxies. #2: reviewed, only
   dependency status tags changed. #1, #3, #4 are `PLANNED / NEEDS RE-REVIEW` until the user answers #1's Open question 1 (and #4's Open question 1).
   Not in the loop and now on hold by the same rule: the two retry-timer plans (261124-1715, 261126-0816). No row order changed.
-- 2026-11-26 (operon): handover for a fresh session written at [HANDOVER-modernise-operon.md](../HANDOVER-modernise-operon.md); read it before acting on this loop.
+- 2026-11-26 (operon): handover for a fresh session written at [HANDOVER-modernise-operon.md](HANDOVER-modernise-operon.md); read it before acting on this loop.
 - 2026-11-26 (operon): independent owning-team re-review of all four entries. #1's Open question 1 answered by evidence: on the
   original toolchain (Maven 3.0.5 on Java 6, 7 and 8, the poms' own library versions, MySQL 5.5 with the repo's schema and seed)
   the same 2 tests fail and the 5 database tests stop at the same cast, so the recorded baseline is today's behaviour. #1 and #3
@@ -77,3 +77,4 @@ depends on is DONE.)
   open and affects only its step 11. Every entry is now `PLANNED`; nothing is approved or picked. No row order changed.
 - 2026-11-26 (operon): the user agreed to version 2.0.0 for #4 (its step 11). No user decision is outstanding on any entry.
 - 2026-11-26 (operon): the user approved #1-#4 (APPROVED). The loop stays in `backlog/`; nothing is picked or started.
+- 2026-11-26 (operon): loop picked from `backlog/` into `todos/` (loop file and #1-#4) on the user's go-ahead, which also starts the four approved plans in dependency order. Nothing dispatched yet: the new session does it.

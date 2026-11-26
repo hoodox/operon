@@ -46,7 +46,7 @@ SQL statement is added or changed.
 
 Names and types checked against `operon/src/resources/META-INF/db/postgres/operon-postgres-schema.sql` (lines 24-38, 54-71,
 109-125) and the MySQL script (`operon-mysql-schema.sql:49-67, 110-127`); no database exists to read a catalog from yet (the Docker
-database is [plan 261125-2111](261125-2111-docker-postgres-database-for-dev-and-test.md)). Types are the Postgres script's, short
+database is [plan 261125-2111](../261125-2111-docker-postgres-database-for-dev-and-test.md)). Types are the Postgres script's, short
 names.
 
 ```mermaid
@@ -118,7 +118,7 @@ message steps are never selected (message steps also start and finish in one tra
 not selected either.
 
 `operon_task` — a step left running by a crash (**example**: no database exists yet; shown as Postgres prints it after
-[plan 261125-2112](261125-2112-convert-operon-from-mysql-to-postgres.md), times in UTC):
+[plan 261125-2112](../261125-2112-convert-operon-from-mysql-to-postgres.md), times in UTC):
 
 ```
 SELECT task_id, case_id, task_status, in_progress_timeout_date, retry_count, lock_version
@@ -394,13 +394,13 @@ so the new restartASingleActivityAtStartup method gets its own transaction.
 ### Database tests and the Postgres plan
 
 The new database test is written **once** and is not rewritten by
-[Convert Operon from MySQL to PostgreSQL](261125-2112-convert-operon-from-mysql-to-postgres.md) (an entry of the "Modernise Operon"
+[Convert Operon from MySQL to PostgreSQL](../261125-2112-convert-operon-from-mysql-to-postgres.md) (an entry of the "Modernise Operon"
 loop; this plan is standalone and outside that loop):
 
 - It drives the engine and the DAO only, plus three plain `SELECT ... WHERE task_id = ?` / `count(*)` reads through a
   `JdbcTemplate` that run unchanged on MySQL and Postgres (no dialect-specific SQL, no boolean literals).
 - It goes into `operon/src/test/resources/testng-db.xml`, the database suite that
-  [plan 261125-2110](261125-2110-rebuild-hoodox-commons-module.md) creates (its `db-tests` profile), not into `testng.xml`. Plan 2112
+  [plan 261125-2110](../261125-2110-rebuild-hoodox-commons-module.md) creates (its `db-tests` profile), not into `testng.xml`. Plan 2112
   makes that suite green on Postgres; it runs this test with no change.
 - In practice the only test database being set up is the Docker Postgres of plans 2111 and 2112, so the test will most likely first
   run once 2112 is `DONE`. If this plan is built before that, its code and test are written but the database run waits, and this
@@ -808,13 +808,13 @@ Start only when plans 261125-2110 and 261124-1715 are `DONE` (see Dependencies):
 ## Dependencies
 
 ### Blocks this plan
-- [Rebuild the missing private `hoodox-commons` jar as a module](261125-2110-rebuild-hoodox-commons-module.md) (operon) — PLANNED;
+- [Rebuild the missing private `hoodox-commons` jar as a module](../261125-2110-rebuild-hoodox-commons-module.md) (operon) — PLANNED;
   **blocked** until DONE: without it the repo does not build or run any test; it also creates `testng-db.xml` and the `db-tests`
   profile this plan's test goes into.
 - [Start the retry timer when the step starts](261124-1715-start-the-retry-timer-when-the-step-starts.md) (operon) — PLANNED, **on hold** (same user rule, 2026-11-26);
   **blocked** until DONE: this plan calls its `_startRetryTimer` helper, reuses its test net `RetryTimerNet.xml` and action
   `ControllableAutoAction`, and appends to its "operon (unreleased)" release-note entry. Both edit `WorkflowCoreEngineImpl.java`.
-- [Convert Operon from MySQL to PostgreSQL](261125-2112-convert-operon-from-mysql-to-postgres.md) (operon, entry of the
+- [Convert Operon from MySQL to PostgreSQL](../261125-2112-convert-operon-from-mysql-to-postgres.md) (operon, entry of the
   "Modernise Operon" loop) — PLANNED; **proceed in parallel** for the code, with the caveat that the database test can only be
   run on a test database, and the only one being set up is its Docker Postgres; until one exists this plan cannot reach `DONE`.
   The test is written once and needs no change from 2112 (see Approach → *Database tests and the Postgres plan*). Plan 2112's own
