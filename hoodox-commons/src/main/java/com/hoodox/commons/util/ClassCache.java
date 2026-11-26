@@ -28,17 +28,26 @@ public class ClassCache {
 	 * @throws BaseSystemException if the object cannot be created
 	 */
 	public Object getObject(String className) {
-		try {
-			Object object = objects.get(className);
+		Object object = objects.get(className);
+		if (object != null) {
+			return object;
+		}
+		// one lock for creating, so each class is created once even when threads ask at
+		// the same time (re-entrant: a constructor may itself call getObject)
+		synchronized (this) {
+			object = objects.get(className);
 			if (object == null) {
-				Object created = Class
-						.forName(className, true, Thread.currentThread().getContextClassLoader())
-						.getDeclaredConstructor().newInstance();
-				// if another thread got there first, everyone uses its object
-				Object existing = objects.putIfAbsent(className, created);
-				object = existing == null ? created : existing;
+				object = create(className);
+				objects.put(className, object);
 			}
 			return object;
+		}
+	}
+
+	private static Object create(String className) {
+		try {
+			return Class.forName(className, true, Thread.currentThread().getContextClassLoader())
+					.getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
 			throw cannotCreate(className, e);
 		} catch (LinkageError e) {

@@ -109,6 +109,7 @@
 							<bindingDirectory>${basedir}/xsd</bindingDirectory>
 							<bindingFiles>operonml_binding.xjb</bindingFiles>
 							<staleFile>${basedir}/target/gensrc_jaxb_operonml/.staleFile</staleFile>
+							<catalog>${basedir}/xsd/catalog.xml</catalog>
 							<verbose>true</verbose>
 						</configuration>
 					</execution>

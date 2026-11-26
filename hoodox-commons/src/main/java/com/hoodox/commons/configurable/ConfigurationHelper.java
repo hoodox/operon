@@ -1,6 +1,5 @@
 package com.hoodox.commons.configurable;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -90,8 +88,17 @@ public class ConfigurationHelper {
 	 *             the database cannot be read
 	 */
 	public void createDomFromFile(String fileName) throws IOException, XMLAccessException {
-		String xml = useDatabase ? readFromDatabase(fileName) : readFromFile(fileName);
-		dom = parse(fileName, xml);
+		if (useDatabase) {
+			dom = parse(fileName, new InputSource(new StringReader(readFromDatabase(fileName))));
+		} else {
+			InputStream in = open(fileName);
+			try {
+				// bytes, not text: the parser takes the encoding from the BOM or the XML declaration
+				dom = parse(fileName, new InputSource(in));
+			} finally {
+				in.close();
+			}
+		}
 	}
 
 	/**
@@ -105,26 +112,19 @@ public class ConfigurationHelper {
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
 			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 			StringWriter writer = new StringWriter();
+			String declared = dom.getXmlEncoding();
+			if (declared != null && !declared.equalsIgnoreCase("UTF-8")) {
+				// the JDK's transformer would repeat the file's own encoding (e.g. ISO-8859-1)
+				// in the declaration, but callers turn this string into UTF-8 bytes
+				transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+				writer.write("<?xml version=\"" + dom.getXmlVersion() + "\" encoding=\"UTF-8\" standalone=\""
+						+ (dom.getXmlStandalone() ? "yes" : "no") + "\"?>");
+			}
 			transformer.transform(new DOMSource(dom), new StreamResult(writer));
 			return writer.toString();
 		} catch (TransformerException e) {
 			throw new BaseSystemException(new ErrorCode(ERROR_CODE_xml_access_error),
 					"Cannot write the XML document as a string", e);
-		}
-	}
-
-	private String readFromFile(String fileName) throws IOException {
-		InputStream in = open(fileName);
-		try {
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			byte[] buffer = new byte[4096];
-			int length;
-			while ((length = in.read(buffer)) != -1) {
-				out.write(buffer, 0, length);
-			}
-			return new String(out.toByteArray(), StandardCharsets.UTF_8);
-		} finally {
-			in.close();
 		}
 	}
 
@@ -176,11 +176,11 @@ public class ConfigurationHelper {
 		}
 	}
 
-	private static Document parse(String fileName, String xml) throws XMLAccessException {
+	private static Document parse(String fileName, InputSource source) throws XMLAccessException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setNamespaceAware(true);
 		try {
-			return factory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
+			return factory.newDocumentBuilder().parse(source);
 		} catch (ParserConfigurationException e) {
 			throw parseError(fileName, e);
 		} catch (SAXException e) {

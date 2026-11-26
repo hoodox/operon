@@ -12,6 +12,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.testng.annotations.Test;
 
@@ -27,7 +28,10 @@ public class ClassCacheTest {
 
 	/** Only used by the threads test, so no other test has cached it. */
 	public static class SlowToCreate {
+		static final AtomicInteger CREATED = new AtomicInteger();
+
 		public SlowToCreate() throws InterruptedException {
+			CREATED.incrementAndGet();
 			Thread.sleep(50);
 		}
 	}
@@ -77,6 +81,7 @@ public class ClassCacheTest {
 			for (Future<Object> result : results) {
 				assertSame(result.get(), expected);
 			}
+			assertEquals(SlowToCreate.CREATED.get(), 1, "constructor runs");
 		} finally {
 			executor.shutdown();
 		}

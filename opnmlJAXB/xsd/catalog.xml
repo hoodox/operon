@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Lets xjc read the W3C xml.xsd (imported by woped-common.xsd and operon-woped-merged.xsd)
+     from this folder instead of fetching it from www.w3.org on every build. -->
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+	<system systemId="http://www.w3.org/2001/xml.xsd" uri="xml.xsd"/>
+</catalog>
