@@ -261,3 +261,4 @@ None.
   `up` reports healthy on a partly loaded database (official image behaviour; `reset` clears it); `OPERON_DB_PORT` must be
   set on each call; an exported `COMPOSE_PROJECT_NAME` or `COMPOSE_FILE` redirects the script; piping SQL into the `psql`
   command may need no terminal on output; small README wording; no `.gitattributes` line-ending rule. Archived to `todos/done/`.
+- 2026-11-27 (operon): DONE — PR raised: https://github.com/hoodox/operon/pull/2.

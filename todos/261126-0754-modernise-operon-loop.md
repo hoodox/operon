@@ -48,7 +48,7 @@ depends on is DONE.)
 | # | Plan | Repo | Status | MR | Merged | In prod | What |
 |---|---|---|---|---|---|---|---|
 | 1 | [x] [rebuild-hoodox-commons-module](done/261125-2110-rebuild-hoodox-commons-module.md) | operon | DONE | [#1](https://github.com/hoodox/operon/pull/1) | yes (`a51b5c0`) | n/a | Rebuild the missing jar as a module; build on JDK 21 with today's test results as the baseline (2 known failures, confirmed on the original toolchain). Waits on nothing |
-| 2 | [x] [docker-postgres-database](done/261125-2111-docker-postgres-database-for-dev-and-test.md) | operon | DONE | not raised | no | n/a | Postgres in Docker for dev and test. Waits on nothing |
+| 2 | [x] [docker-postgres-database](done/261125-2111-docker-postgres-database-for-dev-and-test.md) | operon | DONE | [#2](https://github.com/hoodox/operon/pull/2) | no | n/a | Postgres in Docker for dev and test. Waits on nothing |
 | 3 | [convert-mysql-to-postgres](261125-2112-convert-operon-from-mysql-to-postgres.md) | operon | APPROVED | not raised | no | n/a | Move schema, SQL map, config and seed data to Postgres, matching what MySQL does. Waits on #1, #2 |
 | 4 | [upgrade-java-libraries-maven](261125-2113-upgrade-java-libraries-and-maven-to-latest.md) | operon | APPROVED / RE-REVIEW DONE | not raised | no | n/a | OpenJDK 25, latest libraries and Maven, MyBatis 3, behaviour kept, except BeanShell 2.1.1's own expression differences, accepted by the user (BSF dropped). Version 2.0.0 at step 11. Waits on #1, #3 (#2 through #3) |
 
