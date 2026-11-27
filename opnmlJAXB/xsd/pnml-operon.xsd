@@ -5,7 +5,8 @@
 	-->
 <xsd:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified"
-	elementFormDefault="qualified">
+	elementFormDefault="qualified"
+	xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xsd:include schemaLocation="../xsd/pnml-common.xsd" />
 	<xsd:include schemaLocation="../xsd/operon-woped-merged.xsd" />
@@ -34,6 +35,14 @@
 			referencePlaceToolspecificMergeType, transitionToolspecificMergeType,
 			arcToolspecificMergeType  	
  	</xs:documentation>
+		<xs:appinfo>
+			<!-- Kept here, not in operonml_binding.xjb: xjc moves a globalBindings from an
+			     external .xjb into whichever schema file comes first in a hash map of file
+			     URLs, and it is lost unless that file is this one. -->
+			<jxb:globalBindings enableJavaNamingConventions="true" underscoreBinding="asWordSeparator">
+				<jxb:serializable uid="888" />
+			</jxb:globalBindings>
+		</xs:appinfo>
 	</xs:annotation>
 
 

@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.hoodox.operon</groupId>
+		<artifactId>operon-parent</artifactId>
+		<version>1.0.1</version>
+		<relativePath>../parent-pom</relativePath>
+	</parent>
+	<!--
+		Rebuild of the original com.hoodox.commons library, whose source is lost.
+		It holds only the classes Operon uses, with the behaviour inferred from
+		their callers. Keeps the original coordinates.
+	-->
+	<groupId>com.hoodox.commons</groupId>
+	<artifactId>hoodox-commons</artifactId>
+	<version>1.0.2</version>
+	<packaging>jar</packaging>
+	<name>hoodox-commons</name>
+	<properties>
+		<testng.version>5.8</testng.version>
+		<h2.version>1.4.200</h2.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<classifier>jdk15</classifier>
+			<version>${testng.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<!-- in-memory database for the useDatabase=true tests -->
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>${h2.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven-surefire-plugin.version}</version>
+			</plugin>
+		</plugins>
+	</build>
+</project>

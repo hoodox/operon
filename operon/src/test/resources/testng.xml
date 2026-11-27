@@ -8,9 +8,6 @@
 			<class
 				name="com.hoodox.operon.wfnet.CaseTypeManagerTest">
 			</class>
-			<class
-				name="com.hoodox.operon.workflow.WorkflowEngineTest">
-			</class>
 		</classes>
 	</test>
 </suite>

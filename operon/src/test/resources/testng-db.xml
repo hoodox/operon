@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="operon-db" verbose="5">
+	<test name="operon-db">
+		<classes>
+			<class
+				name="com.hoodox.operon.workflow.WorkflowEngineTest">
+			</class>
+		</classes>
+	</test>
+</suite>
