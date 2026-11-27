@@ -46,7 +46,7 @@ SQL statement is added or changed.
 
 Names and types checked against `operon/src/resources/META-INF/db/postgres/operon-postgres-schema.sql` (lines 24-38, 54-71,
 109-125) and the MySQL script (`operon-mysql-schema.sql:49-67, 110-127`); no database exists to read a catalog from yet (the Docker
-database is [plan 261125-2111](../261125-2111-docker-postgres-database-for-dev-and-test.md)). Types are the Postgres script's, short
+database is [plan 261125-2111](../done/261125-2111-docker-postgres-database-for-dev-and-test.md)). Types are the Postgres script's, short
 names.
 
 ```mermaid

@@ -14,7 +14,7 @@ The user decided to move to **PostgreSQL, run in Docker for development and test
 Postgres script line by line against the MySQL script and the iBatis SQL map
 `operon/src/main/java/com/hoodox/operon/persistence/ibatis/sqlmap/Case.xml` (484 lines), fixes what would break, writes a Postgres
 seed script, replaces the driver and the id generators, and points the tests at the Docker database from
-[the Docker database plan](261125-2111-docker-postgres-database-for-dev-and-test.md). MySQL support is removed, not kept beside it.
+[the Docker database plan](done/261125-2111-docker-postgres-database-for-dev-and-test.md). MySQL support is removed, not kept beside it.
 
 **Rule for this whole effort (user, 2026-11-26): modernisation keeps every feature behaving exactly as it does on MySQL today.** A
 change is in this plan only when Postgres cannot run the code without it, and then it reproduces what MySQL does; anything else
@@ -542,8 +542,8 @@ still list the MySQL driver jar, are excluded on purpose and not edited: Plan 1 
 ### Blocks this plan (must be done first)
 - [Rebuild hoodox-commons and make a clean checkout build green](done/261125-2110-rebuild-hoodox-commons-module.md) — DONE (2026-11-27);
   **not blocking** (it made the code compile and created the `db-tests` profile)
-- [A PostgreSQL database in Docker](261125-2111-docker-postgres-database-for-dev-and-test.md) — PLANNED; **blocked** (the
-  verification runs against it; this plan edits its `compose.yaml`)
+- [A PostgreSQL database in Docker](done/261125-2111-docker-postgres-database-for-dev-and-test.md) — DONE (2026-11-27);
+  **not blocking** (the verification runs against it; this plan edits its `compose.yaml`)
 
 ### Blocked by this plan (cannot start until this is done)
 - [Upgrade Java, libraries and Maven to latest](261125-2113-upgrade-java-libraries-and-maven-to-latest.md) — PLANNED / NEEDS
@@ -575,3 +575,4 @@ still list the MySQL driver jar, are excluded on purpose and not edited: Plan 1 
 - 2026-11-26 (operon): APPROVED — approved by the user ("approve the plans"). Still in `backlog/`, so nothing may be built until the loop is picked into `todos/`.
 - 2026-11-26 (operon): APPROVED — picked from `backlog/` into `todos/` with the Modernise Operon loop, on the user's go-ahead. Not started: the user is clearing the session first; the new session dispatches.
 - 2026-11-27 (operon): dependency on 261125-2110 updated — it is DONE and archived to `todos/done/` (PR #1); links fixed.
+- 2026-11-27 (operon): dependency on 261125-2111 updated — it is DONE and archived to `todos/done/`; links fixed. Its audit noted: if a first database start fails, a later `up` reports healthy on a partly loaded database, so run `reset` after any failed first start.
