@@ -658,7 +658,7 @@ locking, extra tests), step 8 is what changes it.
    - edit: `maven-operon-woped-merge-plugin/pom.xml` — add `plexus-utils` 1.5.15
 7. Docs
    - edit: `README.md` — "Building": JDK 21 or later, Maven 3.9+, `mvn -B clean install` at the root; `-Pdb-tests` needs the
-     database from [Plan 2](../261125-2111-docker-postgres-database-for-dev-and-test.md) and passes once
+     database from [Plan 2](261125-2111-docker-postgres-database-for-dev-and-test.md) and passes once
      [Plan 3](../261125-2112-convert-operon-from-mysql-to-postgres.md) is done
 8. Re-review corrections (new, 2026-11-26; on top of `5fbec9d`; snippets in *Approach → Code changes added by the 2026-11-26
    re-review*)

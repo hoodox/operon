@@ -47,8 +47,8 @@ depends on is DONE.)
 
 | # | Plan | Repo | Status | MR | Merged | In prod | What |
 |---|---|---|---|---|---|---|---|
-| 1 | [x] [rebuild-hoodox-commons-module](done/261125-2110-rebuild-hoodox-commons-module.md) | operon | DONE | [#1](https://github.com/hoodox/operon/pull/1) | no | n/a | Rebuild the missing jar as a module; build on JDK 21 with today's test results as the baseline (2 known failures, confirmed on the original toolchain). Waits on nothing |
-| 2 | [docker-postgres-database](261125-2111-docker-postgres-database-for-dev-and-test.md) | operon | APPROVED | not raised | no | n/a | Postgres in Docker for dev and test. Waits on nothing |
+| 1 | [x] [rebuild-hoodox-commons-module](done/261125-2110-rebuild-hoodox-commons-module.md) | operon | DONE | [#1](https://github.com/hoodox/operon/pull/1) | yes (`a51b5c0`) | n/a | Rebuild the missing jar as a module; build on JDK 21 with today's test results as the baseline (2 known failures, confirmed on the original toolchain). Waits on nothing |
+| 2 | [x] [docker-postgres-database](done/261125-2111-docker-postgres-database-for-dev-and-test.md) | operon | DONE | not raised | no | n/a | Postgres in Docker for dev and test. Waits on nothing |
 | 3 | [convert-mysql-to-postgres](261125-2112-convert-operon-from-mysql-to-postgres.md) | operon | APPROVED | not raised | no | n/a | Move schema, SQL map, config and seed data to Postgres, matching what MySQL does. Waits on #1, #2 |
 | 4 | [upgrade-java-libraries-maven](261125-2113-upgrade-java-libraries-and-maven-to-latest.md) | operon | APPROVED / RE-REVIEW DONE | not raised | no | n/a | OpenJDK 25, latest libraries and Maven, MyBatis 3, behaviour kept, except BeanShell 2.1.1's own expression differences, accepted by the user (BSF dropped). Version 2.0.0 at step 11. Waits on #1, #3 (#2 through #3) |
 
@@ -84,3 +84,8 @@ depends on is DONE.)
 - 2026-11-26 (operon): #1 IN PROGRESS / NEEDS RE-REVIEW — built (`5fbec9d`, local); the audit found a missed build blocker (generated JAXB classes only sometimes `Serializable`) and an encoding fault in the rebuilt `ConfigurationHelper`. Re-review first, then fix and re-audit. #2-#4 wait.
 - 2026-11-26 (operon): #1 re-review done (opus). Root cause of the build difference proven: the old JAXB generator (xjc 2.1.13) places the `Serializable` setting by a hash of each clone's folder path, also on Java 6-8. Fix, the `xml.xsd` local copy, and the encoding, `ClassCache` and test corrections are new step 8; back to the builder. #4 got the same guard and checks (its own re-review done, `APPROVED / RE-REVIEW DONE`); its row's stale "version number still open" text corrected (2.0.0 was agreed). No row order changed.
 - 2026-11-27 (operon): #1 DONE — step 8 built; the second audit found no violations and every Verification item passes. PR [#1](https://github.com/hoodox/operon/pull/1) raised. The temporary handover note was dropped from the unpushed history before the first push (new SHAs: `51ab8a9`, `8c38c6b`). Next: #2.
+- 2026-11-27 (operon): #1 merged — PR #1, merge commit `a51b5c0` on `master` (checked: `8c38c6b` is an ancestor of `origin/master`).
+- 2026-11-27 (operon): #2 IN PROGRESS — dispatched to a builder subagent on branch `modernise-operon-2-postgres-docker`.
+- 2026-11-27 (operon): #2 IN PROGRESS / NEEDS RE-REVIEW — built (`baa1030`, local); its health check can pass before the host can connect. Re-review first.
+- 2026-11-27 (operon): #2 re-review done (opus) — the health check now connects over TCP (`-h 127.0.0.1`), so it cannot pass during first-start initialisation; built as `9979bec`.
+- 2026-11-27 (operon): #2 DONE — independent audit: no code violations, every Verification item re-run and passed. Next: #3.

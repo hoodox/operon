@@ -820,7 +820,7 @@ baseline, the new one); `WopedJaxbMergeHelperTest` passes, as today.
   (2026-11-27); **not blocking** (the JDK 21 baseline every step starts from, including its step 8, is in place)
 - [Convert Operon from MySQL to PostgreSQL](261125-2112-convert-operon-from-mysql-to-postgres.md) — PLANNED;
   **blocked** (step 9 converts the Postgres-ready SQL map)
-- [A PostgreSQL database in Docker](261125-2111-docker-postgres-database-for-dev-and-test.md) — PLANNED; reached through Plan 3
+- [A PostgreSQL database in Docker](done/261125-2111-docker-postgres-database-for-dev-and-test.md) — DONE (2026-11-27); reached through Plan 3
   (the database characterization tests run against it)
 
 ### Blocked by this plan (cannot start until this is done)
@@ -886,3 +886,4 @@ None.
   it has no folder dependence); inline in the old namespace works with a warning; without the catalog and no network it fails.
   Nothing else in the plan changes; approval stands (no new scope, the same outcome).
 - 2026-11-27 (operon): dependency on 261125-2110 updated — it is DONE and archived to `todos/done/` (PR #1); links fixed.
+- 2026-11-27 (operon): dependency on 261125-2111 updated — it is DONE and archived to `todos/done/`; links fixed.
