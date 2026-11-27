@@ -1,6 +1,6 @@
 # Plan: Upgrade Operon to OpenJDK 25 and the latest stable libraries, Maven plugins and Maven
 
-**Status:** APPROVED
+**Status:** APPROVED / RE-REVIEW DONE
 **Loop:** [Modernise Operon](261126-0754-modernise-operon-loop.md)
 **Review model:** opus, high
 
@@ -14,7 +14,7 @@ the characterization tests below pin today's behaviour and are never "flipped".
 itself (listed under *Decisions → Expressions*; the repo's own nets are unaffected). The exception covers only those
 differences: no adapter tries to undo them, nothing else changes behaviour, and the rule still applies to every other step.
 
-Operon dates from about 2009-2013. After [Plan 1](261125-2110-rebuild-hoodox-commons-module.md) it builds on the installed
+Operon dates from about 2009-2013. After [Plan 1](done/261125-2110-rebuild-hoodox-commons-module.md) it builds on the installed
 OpenJDK 21 and its tests give a recorded baseline (2 known failures, see Plan 1 → *Test results today*), but only by compiling for Java 8, opening JDK internals for an old code generator, and holding on to
 libraries that are long out of support: Spring 2.5.6.SEC03 (2011), iBATIS 2 (retired; its successor is MyBatis), Quartz 1.8.6,
 log4j 1.2.14, BSF 2.3.0 with BeanShell 2.0b1, `javax.xml.bind` JAXB (removed from the JDK after Java 8), commons-lang 2.3,
@@ -210,6 +210,36 @@ classpath, so bytecode enhancement is not in use and is not what forces the MyBa
 ```xml
 <jxb:bindings version="3.0" xmlns:jxb="https://jakarta.ee/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 ```
+
+**Step 5, `opnmlJAXB/xsd/pnml-operon.xsd` root element** (added 2026-11-26: Plan 1 step 8 moved the `globalBindings` with
+`<jxb:serializable uid="888"/>` into this file, because xjc 2.1.13 lost it on most clone folders) — *Before* (Plan 1, step 8):
+
+```xml
+	elementFormDefault="qualified"
+	xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+```
+
+*After:*
+
+```xml
+	elementFormDefault="qualified"
+	xmlns:jxb="https://jakarta.ee/xml/ns/jaxb" jxb:version="3.0">
+```
+
+The `jxb:globalBindings` block inside the schema's `xs:appinfo` stays as it is (same prefix). Left in the old namespace, xjc
+4.0.9 still applies it but warns "JAXB 2.x customization namespace updated"; with the line above, no warning (checked
+2026-11-26). Keep it inline even though xjc 4.0.9 keeps schema files in a `LinkedHashMap` and would also honour it in the
+`.xjb`: no reason to move it twice.
+
+**Step 5, `opnmlJAXB/pom.xml` (new `opnml` execution)** — carry over Plan 1's catalog, so xjc keeps reading the local
+`opnmlJAXB/xsd/xml.xsd` instead of `www.w3.org`:
+
+```xml
+								<catalog>${basedir}/xsd/catalog.xml</catalog>
+```
+
+Checked 2026-11-26 with `jaxb2-maven-plugin` 4.3.0 (xjc 4.0.9) on a scratch copy and xjc's HTTP sent to a non-existent proxy:
+with it, `BUILD SUCCESS`; without it, `src-resolve: Cannot resolve the name 'xml:lang'` (`woped-common.xsd:365`).
 
 **Step 5, `CaseTypeManager.java:16-18`** (same pattern in the other 4 files) — *Before:*
 
@@ -622,8 +652,11 @@ passes; in step 7 the only changed assertions are the three accepted-difference 
    - edit: `opnmlJAXB/pom.xml` — `jakarta.xml.bind-api` 4.0.5; `jaxb2-maven-plugin` 4.3.0 with its `xjc` goal, one execution each
      for `pnml-operon.xsd` + `operonml_binding.xjb` (package `com.hoodox.operon.jaxb.opnml`) and `OperonRegistry_v-1.0.xsd` +
      `OperonRegistry_binding.xjb` (package `com.hoodox.operon.jaxb.config`) via `<sources>`/`<xjbSources>`; delete the
-     commented-out `maven-jaxb2-plugin` and woped blocks (`:37-82`, `:115-137`)
+     commented-out `maven-jaxb2-plugin` and woped blocks (`:37-82`, `:115-137`); the `opnml` execution keeps
+     `<catalog>${basedir}/xsd/catalog.xml</catalog>` (from Plan 1 step 8)
    - edit: both `.xjb` files — Jakarta namespace, `version="3.0"`
+   - edit: `opnmlJAXB/xsd/pnml-operon.xsd` root — inline customisation namespace to Jakarta, `jxb:version="3.0"` (see Approach);
+     the `globalBindings`/`serializable` block itself unchanged
    - edit: `operon/pom.xml` — replace `com.sun.xml.bind:jaxb-impl` with `org.glassfish.jaxb:jaxb-runtime` 4.0.9 (runtime)
    - edit: `javax.xml.bind` → `jakarta.xml.bind` in the 5 files listed under *Target versions*
    - delete: `.mvn/jvm.config` (the `--add-opens` was only for the old xjc); keep `.mvn/wrapper/`
@@ -723,6 +756,14 @@ results (1; 7; the 2.1.1 message) and every other method, `nullAttributeStillThr
 `README.md` has the release note naming D1-D3; a `bsh` 3.x line in the versions report is not acted on (see *Decisions*,
 revisit only when 3.0.0 final exists, with the user's say-so); the versions report shows no other stable update newer than the
 table (or each one is recorded in `## Status`);
+the generated classes stay `Serializable` (Plan 1's guard, 2026-11-26):
+`grep -l 'implements Serializable' opnmlJAXB/target/generated-sources/jaxb/com/hoodox/operon/jaxb/opnml/*.java | wc -l` gives
+the same count as Plan 1 (90; use the plugin's actual output folder if it differs) and `javap` on
+`com.hoodox.operon.jaxb.opnml.NetToolspecificMergeType` shows `implements java.io.Serializable` and `serialVersionUID = 888`;
+the build log has no "customization namespace updated" warning; the merge plugin's `generate` goal, run as in Plan 1's
+Verification (smoke project on `ExampleWoped.pnml`), writes `merged.pnml`, from two clones in different folders; `opnmlJAXB`
+builds with xjc's HTTP sent to a non-existent proxy (`MAVEN_OPTS="-Dhttp.proxyHost=no-such-proxy.invalid -Dhttp.proxyPort=3128"`,
+offline, filled local repository);
 `ls .mvn` shows only `wrapper`; the plugin jar has `META-INF/maven/plugin.xml` generated from annotations (no "Deprecated extractor
 java-javadoc" warning) and `BasicOptionsTest` ran.
 
@@ -775,8 +816,8 @@ baseline, the new one); `WopedJaxbMergeHelperTest` passes, as today.
 ## Dependencies
 
 ### Blocks this plan (must be done first)
-- [Rebuild hoodox-commons and make a clean checkout build green](261125-2110-rebuild-hoodox-commons-module.md) — PLANNED;
-  **blocked** (the JDK 21 baseline every step starts from)
+- [Rebuild hoodox-commons and make a clean checkout build green](done/261125-2110-rebuild-hoodox-commons-module.md) — DONE
+  (2026-11-27); **not blocking** (the JDK 21 baseline every step starts from, including its step 8, is in place)
 - [Convert Operon from MySQL to PostgreSQL](261125-2112-convert-operon-from-mysql-to-postgres.md) — PLANNED;
   **blocked** (step 9 converts the Postgres-ready SQL map)
 - [A PostgreSQL database in Docker](261125-2111-docker-postgres-database-for-dev-and-test.md) — PLANNED; reached through Plan 3
@@ -833,3 +874,15 @@ None.
 - 2026-11-26 (operon): PLANNED — Open question 2 resolved: the user agreed to version 2.0.0. Step 11 now sets it.
 - 2026-11-26 (operon): APPROVED — approved by the user ("approve the plans"). Still in `backlog/`, so nothing may be built until the loop is picked into `todos/`.
 - 2026-11-26 (operon): APPROVED — picked from `backlog/` into `todos/` with the Modernise Operon loop, on the user's go-ahead. Not started: the user is clearing the session first; the new session dispatches.
+- 2026-11-26 (operon): APPROVED / NEEDS RE-REVIEW — Plan 1's re-review changed what step 5 starts from: Plan 1 step 8 moves the
+  `globalBindings` (`serializable uid="888"`) from `operonml_binding.xjb` into `pnml-operon.xsd` and adds a local `xml.xsd` +
+  XML catalog, because xjc 2.1.13 dropped the setting on most clone folders (a `HashMap` order) and W3C rate-limits
+  `xml.xsd`. Step 5 must carry both over.
+- 2026-11-26 (operon): APPROVED / RE-REVIEW DONE — owning-team re-review of step 5 only. Added to step 5 (Approach and
+  Implementation): the `pnml-operon.xsd` root namespace to Jakarta / `jxb:version="3.0"`, and the `<catalog>` in the new `opnml`
+  execution; added Verification items for `Serializable` (sources and `javap`), the merge plugin's `generate` goal from two
+  folders, and a build with no `www.w3.org`. Checked on scratch copies with `jaxb2-maven-plugin` 4.3.0 (xjc 4.0.9): 90/95
+  `Serializable` on 12 folders both with the binding in the `.xjb` and inline (xjc 4.0.9 keeps files in a `LinkedHashMap`, so
+  it has no folder dependence); inline in the old namespace works with a warning; without the catalog and no network it fails.
+  Nothing else in the plan changes; approval stands (no new scope, the same outcome).
+- 2026-11-27 (operon): dependency on 261125-2110 updated — it is DONE and archived to `todos/done/` (PR #1); links fixed.

@@ -490,8 +490,8 @@ sequenceDiagram
 ## Dependencies
 
 ### Blocks this plan
-- [Rebuild the missing private `hoodox-commons` jar as a module](../261125-2110-rebuild-hoodox-commons-module.md) (operon) —
-  PLANNED; **blocked** until DONE: `operon/pom.xml` depends on `com.hoodox:hoodox-commons:1.0.2` (l. 31, 106-107), which is not available, so
+- [Rebuild the missing private `hoodox-commons` jar as a module](../done/261125-2110-rebuild-hoodox-commons-module.md) (operon) —
+  DONE (2026-11-27); **not blocking** any more (this plan stays on hold). Before it, `operon/pom.xml` depends on `com.hoodox:hoodox-commons:1.0.2` (l. 31, 106-107), which is not available, so
   the repo does not build or run tests today. Writing this plan needed no build; building and verifying it does.
 
 ### Blocked by this plan
@@ -514,3 +514,4 @@ The Woperon fix does not wait on this plan.
   plan changes when the retry timer starts. Technical content left unchanged; not deleted or archived. Dependency lines
   updated (2110 now `PLANNED / NEEDS RE-REVIEW`, 0816 on hold too). Owning-team re-review.
 - 2026-11-26 (operon): PLANNED, ON HOLD — dependency tags only: 2110 now `PLANNED` (re-review done). Still on hold; nothing else changed.
+- 2026-11-27 (operon): dependency on 261125-2110 updated — it is DONE and archived to `todos/done/` (PR #1); links fixed. Still on hold.

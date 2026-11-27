@@ -34,7 +34,7 @@ from the two column types shown in *Tables involved*.
 
 Intended outcome: every SQL statement the code runs works against the Dockerised Postgres and stores and matches the same rows
 MySQL does; the test suite gives the same result as on MySQL (the baseline in
-[Plan 1](261125-2110-rebuild-hoodox-commons-module.md) → *Test results today*); nothing in the repo refers to MySQL any more.
+[Plan 1](done/261125-2110-rebuild-hoodox-commons-module.md) → *Test results today*); nothing in the repo refers to MySQL any more.
 
 ## Tables involved
 
@@ -532,7 +532,7 @@ still list the MySQL driver jar, are excluded on purpose and not edited: Plan 1 
 
 ## Open questions
 
-1. **End-to-end database tests.** Same cause as [Plan 1](261125-2110-rebuild-hoodox-commons-module.md)'s Open question 1: the 5
+1. **End-to-end database tests.** Same cause as [Plan 1](done/261125-2110-rebuild-hoodox-commons-module.md)'s Open question 1: the 5
    `WorkflowEngineTest` tests stop while loading the sample net, on MySQL and Postgres alike, so this plan can prove the SQL only
    statement by statement. **Answered 2026-11-26** (Plan 1, Open question 1): on MySQL 5.5 with the original toolchain the 5
    tests read the net from `config_repository` and stop at the same cast, so the Verification above is today's MySQL result.
@@ -540,8 +540,8 @@ still list the MySQL driver jar, are excluded on purpose and not edited: Plan 1 
 ## Dependencies
 
 ### Blocks this plan (must be done first)
-- [Rebuild hoodox-commons and make a clean checkout build green](261125-2110-rebuild-hoodox-commons-module.md) — PLANNED;
-  **blocked** (nothing compiles without it; it also creates the `db-tests` profile)
+- [Rebuild hoodox-commons and make a clean checkout build green](done/261125-2110-rebuild-hoodox-commons-module.md) — DONE (2026-11-27);
+  **not blocking** (it made the code compile and created the `db-tests` profile)
 - [A PostgreSQL database in Docker](261125-2111-docker-postgres-database-for-dev-and-test.md) — PLANNED; **blocked** (the
   verification runs against it; this plan edits its `compose.yaml`)
 
@@ -574,3 +574,4 @@ still list the MySQL driver jar, are excluded on purpose and not edited: Plan 1 
   "Configuring Mysql" section (step 7 now replaces that section; the grep excludes `.classpath*` and `target`).
 - 2026-11-26 (operon): APPROVED — approved by the user ("approve the plans"). Still in `backlog/`, so nothing may be built until the loop is picked into `todos/`.
 - 2026-11-26 (operon): APPROVED — picked from `backlog/` into `todos/` with the Modernise Operon loop, on the user's go-ahead. Not started: the user is clearing the session first; the new session dispatches.
+- 2026-11-27 (operon): dependency on 261125-2110 updated — it is DONE and archived to `todos/done/` (PR #1); links fixed.

@@ -400,7 +400,7 @@ loop; this plan is standalone and outside that loop):
 - It drives the engine and the DAO only, plus three plain `SELECT ... WHERE task_id = ?` / `count(*)` reads through a
   `JdbcTemplate` that run unchanged on MySQL and Postgres (no dialect-specific SQL, no boolean literals).
 - It goes into `operon/src/test/resources/testng-db.xml`, the database suite that
-  [plan 261125-2110](../261125-2110-rebuild-hoodox-commons-module.md) creates (its `db-tests` profile), not into `testng.xml`. Plan 2112
+  [plan 261125-2110](../done/261125-2110-rebuild-hoodox-commons-module.md) creates (its `db-tests` profile), not into `testng.xml`. Plan 2112
   makes that suite green on Postgres; it runs this test with no change.
 - In practice the only test database being set up is the Docker Postgres of plans 2111 and 2112, so the test will most likely first
   run once 2112 is `DONE`. If this plan is built before that, its code and test are written but the database run waits, and this
@@ -808,8 +808,8 @@ Start only when plans 261125-2110 and 261124-1715 are `DONE` (see Dependencies):
 ## Dependencies
 
 ### Blocks this plan
-- [Rebuild the missing private `hoodox-commons` jar as a module](../261125-2110-rebuild-hoodox-commons-module.md) (operon) — PLANNED;
-  **blocked** until DONE: without it the repo does not build or run any test; it also creates `testng-db.xml` and the `db-tests`
+- [Rebuild the missing private `hoodox-commons` jar as a module](../done/261125-2110-rebuild-hoodox-commons-module.md) (operon) — DONE (2026-11-27);
+  **not blocking** any more (this plan stays on hold): without it the repo does not build or run any test; it also creates `testng-db.xml` and the `db-tests`
   profile this plan's test goes into.
 - [Start the retry timer when the step starts](261124-1715-start-the-retry-timer-when-the-step-starts.md) (operon) — PLANNED, **on hold** (same user rule, 2026-11-26);
   **blocked** until DONE: this plan calls its `_startRetryTimer` helper, reuses its test net `RetryTimerNet.xml` and action
@@ -840,3 +840,4 @@ None.
   plan changes how the retry timer behaves after a restart. Technical content left unchanged; not deleted or archived.
   Dependency lines updated (2110 and 2112 now `PLANNED / NEEDS RE-REVIEW`, 1715 on hold). Owning-team re-review.
 - 2026-11-26 (operon): PLANNED, ON HOLD — dependency tags only: 2110 and 2112 now `PLANNED` (re-review done). Still on hold; nothing else changed.
+- 2026-11-27 (operon): dependency on 261125-2110 updated — it is DONE and archived to `todos/done/` (PR #1); links fixed. Still on hold.
